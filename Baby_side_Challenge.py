@@ -130,5 +130,21 @@ def establish_connexion(key):
 	:return (srt)challenge_response:   Réponse au challenge
     """
 
+def etat_sommeil():
+    x = accelerometer.get_x()
+    y = accelerometer.get_y()
+    z = accelerometer.get_z()
+    # Norme de l'accélération
+    acceleration = math.sqrt((x**2) + (y**2) + (z**2))
+    # "-" = endormi, "1" = agité, "2" = très agité
+    if acceleration <= 1100 and acceleration  > 900:
+        mouvement = "-"
+    elif acceleration <= 1500 and acceleration > 1100:
+        mouvement = "1"
+    elif acceleration > 1500:
+        mouvement = "2"
+    display.show(mouvement)
+    sleep(200)
+
 def main():
     return True
