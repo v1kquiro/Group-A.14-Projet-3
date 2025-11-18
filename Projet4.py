@@ -7,6 +7,13 @@ radio.on()
 radio.send('hello')
 radio.config(group=23, power=3)
 
+log.set_labels('temperature','sound','light')
+log.add({
+    'temperature' : temperature(),
+    'sound' : microphone.sound_level(),
+    'light' : display.read_light_level()
+})
+
 while True:
     message = radio.receive()
     if message:
@@ -19,3 +26,4 @@ while True:
     elif button_b.is_pressed():
         display.scroll('B')
     sleep(100)
+
