@@ -28,7 +28,6 @@ log.add({
     'light' : display.read_light_level()
 }) #crees les valeurs pour temp son et lumiere
 
-@run_every(s=30)
 def log_data():
     log.add({
     'temperature' : temperature(),
@@ -76,5 +75,5 @@ while True:
     sleep(1000)
     display.clear()
     sleep(1000)
-    #affiche la temp min et max du microbit chaque 30 sec apres avoir appuye un bouton (a ou b)
+    #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
     
