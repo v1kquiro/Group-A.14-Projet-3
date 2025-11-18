@@ -8,6 +8,11 @@ radio.on()
 radio.send('message')
 radio.config(group=32, power=6) #avoir access a recevoir les msgs
 
+currentTemp = temperature()
+max = currentTemp
+min = currentTemp
+#detecter le max et min de temperature
+
 count = 0
 score = 0
 score += 1
@@ -56,4 +61,20 @@ while True:
         display.show(1)
     else:
         display.show(0)
-    #sauvegrader du data
+         #sauvegrader du data
+
+    display.show('.')
+    currentTemp = temperature()
+    if currentTemp < min:
+        min = currentTemp
+    elif currentTemp > max:
+        max = currentTemp
+    if button_a.was_pressed():
+        display.scroll(min)
+    if button_b.was_pressed():
+        display.scroll(max)
+    sleep(1000)
+    display.clear()
+    sleep(1000)
+    #affiche la temp min et max du microbit chaque 30 sec apres avoir appuye un bouton (a ou b)
+    
