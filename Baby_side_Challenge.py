@@ -130,21 +130,30 @@ def establish_connexion(key):
 	:return (srt)challenge_response:   Réponse au challenge
     """
 
-def etat_sommeil():
+etats_sommeil = []
+symboles = ["-", "1", "2"]
+def etat_sommeil_bebe():
+    compteur = [0, 0, 0]
     x = accelerometer.get_x()
     y = accelerometer.get_y()
     z = accelerometer.get_z()
     # Norme de l'accélération
     acceleration = math.sqrt((x**2) + (y**2) + (z**2))
     # "-" = endormi, "1" = agité, "2" = très agité
-    if acceleration <= 1100 and acceleration  > 900:
-        mouvement = "-"
-    elif acceleration <= 1500 and acceleration > 1100:
-        mouvement = "1"
-    elif acceleration > 1500:
-        mouvement = "2"
-    display.show(mouvement)
-    sleep(200)
+    if acceleration <= 1100:
+        etats_sommeil.append(0)
+    elif 1100 < acceleration <= 1500:
+        etats_sommeil.append(1)
+    else:
+        etats_sommeil.append(2)
+    if len(etats_sommeil) == 12:
+         etats_sommeil.pop(0)
+    if len(etats_sommeil) == 11:
+        for valeur in etats_sommeil:
+            compteur[valeur] += 1
+        etat_actuel = compteur.index(max(compteur))
+        display.show(symboles[etat_actuel])
+    sleep(100)
 
 def main():
     return True
