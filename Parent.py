@@ -44,23 +44,23 @@ while True:
         display.scroll(message)
         #recevoir les msgs
 
-    #if button_a.is_pressed() and button_b.is_pressed():
-        #display.scroll('A and B')
-    #elif button_a.is_pressed():
-        #display.scroll('A')
-    #elif button_b.is_pressed():
-        #display.scroll('B')
-    #sleep(100)
+    if button_a.is_pressed() and button_b.is_pressed():
+        display.scroll('A and B')
+    elif button_a.is_pressed():
+        display.scroll('A')
+    elif button_b.is_pressed():
+        display.scroll('B')
+    sleep(100)
     #si les boutons A et B sont appuyer
 
-    sleep(10000)
+    sleep(200)
 
-    if button_a.was_pressed():
-        running = not running
-    if running:
-        display.show(1)
-    else:
-        display.show(0)
+    #if button_a.was_pressed():
+        #running = not running
+    #if running:
+        #display.show(1)
+    #else:
+        #display.show(0)
          #sauvegrader du data
 
     ##temp##
