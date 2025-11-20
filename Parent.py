@@ -1,16 +1,17 @@
 from microbit import *
 import radio
 import log
+import music
 
 radio.config(group=32) #l'alimentation pour recevoir les msgs etc pour microbit
 
 radio.on()
-radio.send('message')
 radio.config(group=32, power=6) #avoir access a recevoir les msgs
 
 currentTemp = temperature()
-max = currentTemp
-min = currentTemp
+targetTemp = 20
+max = -999
+min = 999
 #detecter le max et min de temperature
 
 count = 0
@@ -52,28 +53,41 @@ while True:
     sleep(100)
     #si les boutons A et B sont appuyer
 
-    sleep(10000)
+    sleep(200)
 
-    if button_a.was_pressed():
-        running = not running
-    if running:
-        display.show(1)
-    else:
-        display.show(0)
+    #if button_a.was_pressed():
+        #running = not running
+    #if running:
+        #display.show(1)
+    #else:
+        #display.show(0)
          #sauvegrader du data
 
+    ##temp##
     display.show('.')
     currentTemp = temperature()
+    
     if currentTemp < min:
         min = currentTemp
     elif currentTemp > max:
         max = currentTemp
+
+    if currentTemp >= targetTemp + 3:
+        music.play(music.JUMP_UP)
+        display.scroll("HIGH")
+
+    if currentTemp <= targetTemp - 3:
+        music.play(music.JUMP_DOWN)
+        display.scroll("LOW")
+        
     if button_a.was_pressed():
         display.scroll(min)
     if button_b.was_pressed():
         display.scroll(max)
+        
     sleep(1000)
     display.clear()
     sleep(1000)
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
-    
+
+    radio.send(str(currentTemp))
