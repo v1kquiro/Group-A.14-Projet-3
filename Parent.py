@@ -39,6 +39,44 @@ def log_data():
 
 running = False
 while True:
+    temps_maintenu = 1000
+    combinaison = False
+    A = 0
+    B = 0
+    key = Image(
+            "00900:"
+            "09990:"
+            "00900:"
+            "09900:"
+            "00900"
+        )
+    debut_appui_A = None
+    while not combinaison:
+        display.show(key)
+        if button_b.was_pressed():
+            B += 1
+            display.show("B")
+            sleep(200)
+        if button_a.is_pressed():
+            if debut_appui_A is None: 
+                debut_appui_A = running_time()
+            if running_time() - debut_appui_A >= temps_maintenu:
+                if A == 1 and B == 3:
+                    combinaison = True
+                    display.scroll("Adrien", 70)
+                else:
+                    display.scroll("Reset", 60)
+                    A = 0
+                    B = 0
+                    debut_appui_A = None
+        else:
+            if debut_appui_A is not None:
+                duree = running_time() - debut_appui_A
+                if duree < temps_maintenu:
+                    A += 1
+                    display.show("A")
+                    sleep(200)
+            debut_appui_A = None
     message = radio.receive()
     if message:
         display.scroll(message)
@@ -91,3 +129,4 @@ while True:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
