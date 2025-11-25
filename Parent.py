@@ -37,8 +37,8 @@ def log_data():
     })
     #log les entrees chaque 30 sec
 
-running = False
-while True:
+running = True
+while running:
     temps_maintenu = 1000
     combinaison = False
     A = 0
@@ -129,4 +129,5 @@ while True:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
 
