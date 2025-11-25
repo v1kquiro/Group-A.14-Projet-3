@@ -51,7 +51,7 @@ while running:
             "09990:"
             "00900:"
             "09900:"
-            "00900"
+            "00900:"
         )
     debut_appui_A = None
     while not combinaison:
@@ -135,4 +135,5 @@ while running:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
 
