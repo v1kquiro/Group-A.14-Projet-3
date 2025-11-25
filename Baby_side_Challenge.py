@@ -159,6 +159,25 @@ def etat_sommeil_bebe():
         display.show(symboles[etat_actuel])
     sleep(100)
 
+def musique():
+	star_wars = [
+    	"A4:2","A4:2","A4:2",
+    	"F4:1","C5:1",
+    	"A4:2","F4:1","C5:1","A4:4",
+    	"E5:2","E5:2","E5:2",
+    	"F5:1","C5:1",
+    	"G5:2","F5:1","C5:1","A4:4",
+    	"A5:2","A4:1","A4:1","A5:2","G5:1","F5:1",
+    	"E5:2","D5:1","E5:1","F5:2","E5:4",
+    	"E5:2","E5:2","E5:2",
+    	"F5:1","C5:1",
+    	"G5:2","F5:1","C5:1","A4:4",
+    	"A5:2","A4:1","A4:1","A5:2","G5:1","F5:1",
+    	"E5:2","D5:1","E5:1","F5:2","E5:4"
+	]
+	music.set_tempo(bpm=60) 
+	music.play(star_wars)
+
 def main():
     return True
 while running :
