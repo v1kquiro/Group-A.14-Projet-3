@@ -27,6 +27,8 @@ log.add({
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
     'light' : display.read_light_level()
+    'etat_sommeil' : etat_sommeil_bebe()
+    'musique' : musique()
 }) #crees les valeurs pour temp son et lumiere
 
 def log_data():
@@ -34,6 +36,8 @@ def log_data():
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
     'light' : display.read_light_level()
+    'etat_sommeil' : etat_sommeil_bebe()
+    'musique' : musique()
     })
     #log les entrees chaque 30 sec
 
@@ -61,9 +65,12 @@ while running:
             if debut_appui_A is None: 
                 debut_appui_A = running_time()
             if running_time() - debut_appui_A >= temps_maintenu:
-                if A == 1 and B == 3:
+                if A == 1 and B == 1:
                     combinaison = True
                     radio.send(str(etat_sommeil_bebe))
+                elif A == 1 and B == 2:
+                    combinaison = True
+                    radio.send(str(musique())
                 else:
                     display.scroll("Reset", 60)
                     A = 0
@@ -129,6 +136,7 @@ while running:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
 
 
 
