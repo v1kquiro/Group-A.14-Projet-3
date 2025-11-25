@@ -22,7 +22,7 @@ display.scroll(score)
 name = 'Parent'
 display.scroll(name) #nommee la microbit
 
-log.set_labels('temperature','sound','light')
+log.set_labels('temperature','sound','light','etat_sommeil)
 log.add({
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
@@ -135,3 +135,4 @@ while running:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
