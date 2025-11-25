@@ -184,3 +184,61 @@ while running :
 	    message = radio.receive()
     if message:
         display.scroll(message)
+
+
+"""calcul le nv de lumière pour pouvoir couper la lumière des leds du be:bi"""
+	while True  :
+
+    	if display.read_light_level() < 25 :
+            
+            for larg in range(5) :
+                
+                for haut in range(5) :
+                   
+                    display.set_pixel(larg,haut,0)
+
+
+"""renvoi la luminosité au be:bi parent => manque la fct send package"""
+
+def nv_de_lum():
+
+    if display.read_light_level() < 25 : 
+
+        """envoi d' un package disant lumière éteinte et 0"""
+    
+    elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
+
+       """envoi d' un package disant lumière presque éteinte et 1"""
+
+    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+
+        """envoi d' un package disant lumière très faible et 2"""
+
+    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+
+         """envoi d' un package disant lumière  faible et 3"""
+
+    elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
+
+        """envoi d' un package disant lumière moyenne et 4"""
+
+    elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
+
+        """envoi d' un package disant lumière  bonne et  5"""
+
+    elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
+
+        """envoi d' un package disant lumière  normale et 6"""   
+        
+    elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
+
+        """envoi d' un package disant lumière  haute et 7""" 
+
+
+    elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
+
+        """envoi d' un package disant lumière très haute et 8"""
+
+    else :
+
+        """"envoi d' un package disant lumière extrème et 9"""
