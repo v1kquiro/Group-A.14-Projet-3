@@ -36,7 +36,8 @@ def log_data():
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
     'light' : display.read_light_level(),
-    'etat_sommeil' : etat_sommeil_bebe()
+    'etat_sommeil' : etat_sommeil_bebe(),
+    'musique' : musique()
     })
     #log les entrees chaque 30 sec
 
@@ -135,6 +136,7 @@ while running:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
 
 
 
