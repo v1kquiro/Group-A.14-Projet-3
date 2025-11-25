@@ -63,7 +63,7 @@ while running:
             if running_time() - debut_appui_A >= temps_maintenu:
                 if A == 1 and B == 3:
                     combinaison = True
-                    display.scroll("Adrien", 70)
+                    radio.send(str(etat_sommeil_bebe))
                 else:
                     display.scroll("Reset", 60)
                     A = 0
@@ -129,5 +129,6 @@ while running:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
 
 
