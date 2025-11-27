@@ -230,31 +230,23 @@ def nv_de_lum():
     else :
 
         """"envoi d' un package disant lumière extrème et 9"""
-while True:
-    temp = temperature()
-    radio.send("TEMP" + str(temp))
-
-    msg = radio.receive()
-    if msg:
-        if msg == "TEMP":
-            radio.send("TEMP"+str(temp))
-            display.clear()
-       
-    if display.read_light_level() < 25 :        
-        for larg in range(5) :     
-            for haut in range(5) :
-                display.set_pixel(larg,haut,0)
 
 running = True
 while running :
-	if message:
-    	if recevoir_signal() == "etat_sommeil":
-        	etat_sommeil_bebe()
-    	elif recevoir_signal() == "musique":
-        	musique()
-    	elif recevoir_signal() == "temperature":
-        	temperature()
-    	elif recevoir_signal() == "lumiere":
-        	nv_de_lum()
-    	else:
-        	pass
+    signal = None
+    recevoir_signal()
+    if signal:
+        if recevoir_signal() == "etat_sommeil":
+            etat_sommeil_bebe()
+        elif recevoir_signal() == "musique":
+            musique()
+        elif recevoir_signal() == "temperature":
+            temperature()
+        elif recevoir_signal() == "lumiere":
+            nv_de_lum()
+        else:
+            pass
+        if display.read_light_level() < 25 :        
+            for larg in range(5) :     
+                for haut in range(5) :
+                    display.set_pixel(larg,haut,0)
