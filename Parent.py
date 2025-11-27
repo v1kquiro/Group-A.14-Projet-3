@@ -22,6 +22,12 @@ display.scroll(score)
 name = 'Parent'
 display.scroll(name) #nommee la microbit
 
+def envoyer_signal(message):
+    radio.send(message)
+    display.show("S")
+    sleep(300)
+    display.clear()
+
 log.set_labels('temperature','sound','light','etat_sommeil','musique')
 log.add({
     'temperature' : temperature(),
@@ -67,10 +73,16 @@ while running:
             if running_time() - debut_appui_A >= temps_maintenu:
                 if A == 1 and B == 1:
                     combinaison = True
-                    radio.send(str(etat_sommeil_bebe()))
+                    envoyer_signal("etat_sommeil")
                 elif A == 1 and B == 2:
                     combinaison = True
-                    radio.send(str(musique()))
+                    envoyer_signal("musique")
+                elif A == 1 and B == 3:
+                    radio.send("quantite_lait")
+                elif A == 1 and B == 1:
+                    envoyer_signal("temperature")
+                elif A == 2 and B == 1:
+                    envoyer_signal("lumiere")
                 else:
                     display.scroll("Reset", 60)
                     A = 0
@@ -137,60 +149,31 @@ while running:
 
     radio.send(str(currentTemp))
 
-
-
 #def de la boucle de demande de nourrir et son clear
 def nourrir() :
-
-    index = 0
-    
-    while True  :
-        
+    index = 0   
+    while True  :      
         if  button_b.was_pressed() :
-
             display.clear()
-
             index += 1 
-
             return index
-
         else :
-
             faim = [Image.ANGRY, Image.ARROW_S]
-
             display.show(faim, delay=1000, loop=False)
-
             music.play(music.BA_DING)
-
+            
 #fait en sorrte que l'alarme se joue toute les 3h et que on puisse utiliser les boutons peit importe le moment.
-
-def total_lait()
-    
+def total_lait():   
     while True :
-    
         index = 1
-        temps_alerte = 10000
-        
-        début = running_time()
-      
-        while True :
-            
-            if button_a.was_pressed() :
-                
-                display.show(index)
-                
-                sleep(2000)
-                
-                display.clear()
-    
-               
-            
-            elif running_time() - début >= temps_alerte : 
-    
-                nourrir() 
-                    
-                index +=1
-    
+        temps_alerte = 10000       
+        début = running_time()    
+        while True :            
+            if button_a.was_pressed() :              
+                display.show(index)                
+                sleep(2000)               
+                display.clear()             
+            elif running_time() - début >= temps_alerte :    
+                nourrir()                     
+                index +=1    
                 début = running_time()
-
-
