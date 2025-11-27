@@ -7,11 +7,8 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
-radio.config(group=32) #l'alimentation pour recevoir les msgs etc pour microbit
-
 radio.on()
-radio.config(group=32, power=6) #avoir access a recevoir les msgs
-
+radio.config(group=32, power=6) #l'alimentation pour recevoir les msgs etc pour microbit
 
 def hashing(string):
 	"""
