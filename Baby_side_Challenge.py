@@ -2,6 +2,7 @@ from microbit import *
 import radio
 import random
 import music
+import math as m
 
 #Can be used to filter the communication, only the ones with the same parameters will receive messages
 #radio.config(group=23, channel=2, address=0x11111111)
@@ -146,7 +147,7 @@ def etat_sommeil_bebe():
     y = accelerometer.get_y()
     z = accelerometer.get_z()
     # Norme de l'accélération
-    acceleration = math.sqrt((x**2) + (y**2) + (z**2))
+    acceleration = m.sqrt((x**2) + (y**2) + (z**2))
     # "-" = endormi, "1" = agité, "2" = très agité
     if acceleration <= 1100:
         etats_sommeil.append(0)
