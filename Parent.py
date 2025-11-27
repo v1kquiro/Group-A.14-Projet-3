@@ -22,23 +22,80 @@ display.scroll(score)
 name = 'Parent'
 display.scroll(name) #nommee la microbit
 
-log.set_labels('temperature','sound','light')
+def envoyer_signal(message):
+    radio.send(message)
+    display.show("S")
+    sleep(300)
+    display.clear()
+
+log.set_labels('temperature','sound','light','etat_sommeil','musique')
 log.add({
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
-    'light' : display.read_light_level()
+    'light' : display.read_light_level(),
+    'etat_sommeil' : etat_sommeil_bebe(),
+    'musique' : musique()
 }) #crees les valeurs pour temp son et lumiere
 
 def log_data():
     log.add({
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
-    'light' : display.read_light_level()
+    'light' : display.read_light_level(),
+    'etat_sommeil' : etat_sommeil_bebe(),
+    'musique' : musique()
     })
     #log les entrees chaque 30 sec
 
-running = False
-while True:
+running = True
+while running:
+    temps_maintenu = 1000
+    combinaison = False
+    A = 0
+    B = 0
+    key = Image(
+            "00900:"
+            "09990:"
+            "00900:"
+            "09900:"
+            "00900:"
+        )
+    debut_appui_A = None
+    while not combinaison:
+        display.show(key)
+        if button_b.was_pressed():
+            B += 1
+            display.show("B")
+            sleep(200)
+        if button_a.is_pressed():
+            if debut_appui_A is None: 
+                debut_appui_A = running_time()
+            if running_time() - debut_appui_A >= temps_maintenu:
+                if A == 1 and B == 1:
+                    combinaison = True
+                    envoyer_signal("etat_sommeil")
+                elif A == 1 and B == 2:
+                    combinaison = True
+                    envoyer_signal("musique")
+                elif A == 1 and B == 3:
+                    radio.send("quantite_lait")
+                elif A == 1 and B == 1:
+                    envoyer_signal("temperature")
+                elif A == 2 and B == 1:
+                    envoyer_signal("lumiere")
+                else:
+                    display.scroll("Reset", 60)
+                    A = 0
+                    B = 0
+                    debut_appui_A = None
+        else:
+            if debut_appui_A is not None:
+                duree = running_time() - debut_appui_A
+                if duree < temps_maintenu:
+                    A += 1
+                    display.show("A")
+                    sleep(200)
+            debut_appui_A = None
     message = radio.receive()
     if message:
         display.scroll(message)
@@ -91,3 +148,32 @@ while True:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
+#def de la boucle de demande de nourrir et son clear
+def nourrir() :
+    index = 0   
+    while True  :      
+        if  button_b.was_pressed() :
+            display.clear()
+            index += 1 
+            return index
+        else :
+            faim = [Image.ANGRY, Image.ARROW_S]
+            display.show(faim, delay=1000, loop=False)
+            music.play(music.BA_DING)
+            
+#fait en sorrte que l'alarme se joue toute les 3h et que on puisse utiliser les boutons peit importe le moment.
+def total_lait():   
+    while True :
+        index = 1
+        temps_alerte = 10000       
+        début = running_time()    
+        while True :            
+            if button_a.was_pressed() :              
+                display.show(index)                
+                sleep(2000)               
+                display.clear()             
+            elif running_time() - début >= temps_alerte :    
+                nourrir()                     
+                index +=1    
+                début = running_time()

@@ -149,10 +149,15 @@ def receive_packet(packet_received, key):
             (int)lenght:           Longueur de la donnée en caractère 
             (str) message:         Données reçue
     """
-    T, L, V = unpack_data(packet_received, key)
+    try:
+        T, L, V = unpack_data(packet_received, key)
+        return T, L, V
     
-#Calculate the challenge response
-def calculate_challenge_response(challenge):
+    except: 
+        return "",0, ""
+    
+#Calculate the challenge response 
+def calculate_challenge_response(challenge):    # ce lui le nonce
     """
     Calcule la réponse au challenge initial de connection envoyé par l'autre micro:bit
 
@@ -173,6 +178,3 @@ def respond_to_connexion_request(key):
     """
 
 def main():
-
-
-

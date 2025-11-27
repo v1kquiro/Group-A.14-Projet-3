@@ -7,6 +7,10 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
+radio.config(group=32) #l'alimentation pour recevoir les msgs etc pour microbit
+
+radio.on()
+radio.config(group=32, power=6) #avoir access a recevoir les msgs
 
 
 def hashing(string):
@@ -155,5 +159,94 @@ def etat_sommeil_bebe():
         display.show(symboles[etat_actuel])
     sleep(100)
 
+def musique():
+	star_wars = [
+    	"A4:2","A4:2","A4:2",
+    	"F4:1","C5:1",
+    	"A4:2","F4:1","C5:1","A4:4",
+    	"E5:2","E5:2","E5:2",
+    	"F5:1","C5:1",
+    	"G5:2","F5:1","C5:1","A4:4",
+    	"A5:2","A4:1","A4:1","A5:2","G5:1","F5:1",
+    	"E5:2","D5:1","E5:1","F5:2","E5:4",
+    	"E5:2","E5:2","E5:2",
+    	"F5:1","C5:1",
+    	"G5:2","F5:1","C5:1","A4:4",
+    	"A5:2","A4:1","A4:1","A5:2","G5:1","F5:1",
+    	"E5:2","D5:1","E5:1","F5:2","E5:4"
+	]
+	music.set_tempo(bpm=60) 
+	music.play(star_wars)
+
 def main():
     return True
+while running :
+	    message = radio.receive()
+    if message:
+        display.scroll(message)
+
+
+"""renvoi la luminosité au be:bi parent => manque la fct send package"""
+
+def nv_de_lum():
+
+    if display.read_light_level() < 25 : 
+
+        """envoi d' un package disant lumière éteinte et 0"""
+    
+    elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
+
+       """envoi d' un package disant lumière presque éteinte et 1"""
+
+    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+
+        """envoi d' un package disant lumière très faible et 2"""
+
+    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+
+         """envoi d' un package disant lumière  faible et 3"""
+
+    elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
+
+        """envoi d' un package disant lumière moyenne et 4"""
+
+    elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
+
+        """envoi d' un package disant lumière  bonne et  5"""
+
+    elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
+
+        """envoi d' un package disant lumière  normale et 6"""   
+        
+    elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
+
+        """envoi d' un package disant lumière  haute et 7""" 
+
+
+    elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
+
+        """envoi d' un package disant lumière très haute et 8"""
+
+    else :
+
+        """"envoi d' un package disant lumière extrème et 9"""
+
+	while True:
+		temp = temperature()
+		radio.send("TEMP" + str(temp))
+
+		msg = radio.receive()
+		if msg:
+			if msg == "TEMP":
+				radio.send("TEMP"+str(temp))
+				display.clear()
+
+		"""calcul le nv de lumière pour pouvoir couper la lumière des leds du be:bi"""
+    	if display.read_light_level() < 25 :
+            
+            for larg in range(5) :
+                
+                for haut in range(5) :
+                   
+                    display.set_pixel(larg,haut,0)
+
