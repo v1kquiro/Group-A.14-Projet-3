@@ -100,7 +100,6 @@ def unpack_data(encrypted_packet, key):
             (str) message:         Données reçues
     """
 
-
 #Unpack the packet, check the validity and return the type, length and content
 def receive_packet(packet_received, key):
     """
@@ -114,7 +113,14 @@ def receive_packet(packet_received, key):
             (int)lenght:           Longueur de la donnée en caractère
             (str) message:         Données reçue
     """
-    
+
+def envoyer_signal(message):
+    radio.send(message)
+
+def recevoir_signal():
+    signal = radio.receive()
+
+
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
     """
@@ -177,13 +183,6 @@ def musique():
 	]
 	music.set_tempo(bpm=60) 
 	music.play(star_wars)
-
-def main():
-    return True
-while running :
-	    message = radio.receive()
-    if message:
-        display.scroll(message)
 
 
 """renvoi la luminosité au be:bi parent => manque la fct send package"""
@@ -250,3 +249,15 @@ def nv_de_lum():
                    
                     display.set_pixel(larg,haut,0)
 
+running = True
+while running :
+    if recevoir_signal() == "etat_sommeil":
+        etat_sommeil_bebe()
+    elif recevoir_signal() == "musique":
+        musique()
+    elif recevoir_signal() == "temperature":
+        temperature()
+    elif recevoir_signal() == "lumiere":
+        nv_de_lum()
+    else:
+        pass
