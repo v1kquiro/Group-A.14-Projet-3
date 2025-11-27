@@ -1,32 +1,33 @@
-from tkinter import Image
 from microbit import *
 import radio
 import random
 import music
+import math as m
 
 #Can be used to filter the communication, only the ones with the same parameters will receive messages
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
-
+radio.on()
+radio.config(group=32, power=6) #l'alimentation pour recevoir les msgs etc pour microbit
 
 def hashing(string):
 	"""
-	Hachage d'une chaîne de caractères fournie en paramètre.
-	Le résultat est une chaîne de caractères.
+	Hachage d'une chaine de caracteres fournie en parametre.
+	Le resultat est une chaine de caracteres.
 	Attention : cette technique de hachage n'est pas suffisante (hachage dit cryptographique) pour une utilisation en dehors du cours.
 
-	:param (str) string: la chaîne de caractères à hacher
-	:return (str): le résultat du hachage
+	:param (str) string: la chaine de caracteres a hacher
+	:return (str): le resultat du hachage
 	"""
 	def to_32(value):
 		"""
-		Fonction interne utilisée par hashing.
-		Convertit une valeur en un entier signé de 32 bits.
-		Si 'value' est un entier plus grand que 2 ** 31, il sera tronqué.
+		Fonction interne utilisee par hashing.
+		Convertit une valeur en un entier signe de 32 bits.
+		Si 'value' est un entier plus grand que 2 ** 31, il sera tronque.
 
-		:param (int) value: valeur du caractère transformé par la valeur de hachage de cette itération
-		:return (int): entier signé de 32 bits représentant 'value'
+		:param (int) value: valeur du caractere transforme par la valeur de hachage de cette iteration
+		:return (int): entier signe de 32 bits representant 'value'
 		"""
 		value = value % (2 ** 32)
 		if value >= 2**31:
@@ -44,7 +45,7 @@ def hashing(string):
 			x = -2
 		return str(x)
 	return ""
-    
+
 def vigenere(message, key, decryption=False):
     text = ""
     key_length = len(key)
@@ -72,7 +73,7 @@ def vigenere(message, key, decryption=False):
         else:
             text += char
     return text
-    
+
 def send_packet(key, type, content):
     """
     Envoie de données fournie en paramètres
@@ -97,7 +98,6 @@ def unpack_data(encrypted_packet, key):
             (str) message:         Données reçues
     """
 
-
 #Unpack the packet, check the validity and return the type, length and content
 def receive_packet(packet_received, key):
     """
@@ -111,7 +111,15 @@ def receive_packet(packet_received, key):
             (int)lenght:           Longueur de la donnée en caractère
             (str) message:         Données reçue
     """
-    
+
+def envoyer_signal(message):
+    radio.send(message)
+
+def recevoir_signal():
+    signal = radio.receive()
+	return signal
+
+
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
     """
@@ -120,6 +128,7 @@ def calculate_challenge_response(challenge):
     :param (str) challenge:            Challenge reçu
 	:return (srt)challenge_response:   Réponse au challenge
     """
+
 #Ask for a new connection with a micro:bit of the same group
 def establish_connexion(key):
     """
@@ -129,47 +138,93 @@ def establish_connexion(key):
     :param (str) key:                  Clé de chiffrement
 	:return (srt)challenge_response:   Réponse au challenge
     """
-    # generer un nombre aleatoire pour aleatoire( 8 chiffres )
-    nonce = str(random.randint(10000000, 99999999))  # Générer un nonce aleatoire
-    display.scroll("N:" + nonce[:4]) # vas afficher les 4 premieers chiffres
 
-    # on consrtuit le paquet de demande de connexion
-    packet_type="CONNECT"
-    content = nonce
-    #Envoyer le challenge
-    send_packet(key, packet_type, content)
-    display.show(Image.ARROW_E)  # indique l'envoi du challenge en cours
+etats_sommeil = []
+symboles = ["-", "1", "2"]
+def etat_sommeil_bebe():
+    compteur = [0, 0, 0]
+    x = accelerometer.get_x()
+    y = accelerometer.get_y()
+    z = accelerometer.get_z()
+    # Norme de l'accélération
+    acceleration = math.sqrt((x**2) + (y**2) + (z**2))
+    acceleration = m.sqrt((x**2) + (y**2) + (z**2))
+    # "-" = endormi, "1" = agité, "2" = très agité
+    if acceleration <= 1100:
+        etats_sommeil.append(0)
+    elif 1100 < acceleration <= 1500:
+        etats_sommeil.append(1)
+    else:
+        etats_sommeil.append(2)
+    if len(etats_sommeil) == 12:
+         etats_sommeil.pop(0)
+    if len(etats_sommeil) == 11:
+        for valeur in etats_sommeil:
+            compteur[valeur] += 1
+        etat_actuel = compteur.index(max(compteur))
+        radio.send(symboles[etat_actuel])
+    sleep(100)
 
-    #Attendre la réponse (timeout de 2 secondes)
-    start_time = running_time()
-    timeout = 2000  #2secondes
-    while running_time() - start_time < timeout:    
-        response_packet = radio.receive()
-        if response_packet:
-            #Decrypte et déballe la reponse(paquet) réçue
-            decrypted = vigenere(response_packet, key, decryption=True)
-            parts = decrypted.split('|')
-
-            if len(parts) == 3:
-                 response_type = parts[0]
-                 received_hash = parts[2]
-
-                 # On verifie que c'est bie une reponse
-                if response_type == "RESPONSE":
-                    #Calculer ce que devrait etre le hash
-                    expected_hash = hashing(nonce)
-
-                    #Comparer
-                    if received_hash == expected_hash:
-                        display.show(Image.YES) #hash correct !
-                        return True # la connexion est bien etablie
-                    else:
-                        display.show(Image.No) #hash incorrect
-                        return False
-        sleep(100)
+def musique():
+	star_wars = [
+    	"A4:2","A4:2","A4:2",
+    	"F4:1","C5:1",
+    	"A4:2","F4:1","C5:1","A4:4",
+    	"E5:2","E5:2","E5:2",
+    	"F5:1","C5:1",
+    	"G5:2","F5:1","C5:1","A4:4",
+    	"A5:2","A4:1","A4:1","A5:2","G5:1","F5:1",
+    	"E5:2","D5:1","E5:1","F5:2","E5:4",
+    	"E5:2","E5:2","E5:2",
+    	"F5:1","C5:1",
+    	"G5:2","F5:1","C5:1","A4:4",
+    	"A5:2","A4:1","A4:1","A5:2","G5:1","F5:1",
+    	"E5:2","D5:1","E5:1","F5:2","E5:4"
+	]
+	music.set_tempo(bpm=60) 
+	music.play(star_wars)
 
 
-    
+"""renvoi la luminosité au be:bi parent => manque la fct send package"""
 
-def main():
-    return True
+def nv_de_lum():
+    if display.read_light_level() < 25 : 
+        """envoi d' un package disant lumière éteinte et 0"""  
+    elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
+       """envoi d' un package disant lumière presque éteinte et 1"""
+    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+        """envoi d' un package disant lumière très faible et 2"""
+    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+         """envoi d' un package disant lumière  faible et 3"""
+    elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
+        """envoi d' un package disant lumière moyenne et 4"""
+    elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
+        """envoi d' un package disant lumière  bonne et  5"""
+    elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
+        """envoi d' un package disant lumière  normale et 6"""         
+    elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
+        """envoi d' un package disant lumière  haute et 7""" 
+    elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
+        """envoi d' un package disant lumière très haute et 8"""
+    else :
+        """"envoi d' un package disant lumière extrème et 9"""
+
+running = True
+while running :
+    signal = None
+    recevoir_signal()
+    if signal:
+        if recevoir_signal() == "etat_sommeil":
+            etat_sommeil_bebe()
+        elif recevoir_signal() == "musique":
+            musique()
+        elif recevoir_signal() == "temperature":
+            temperature()
+        elif recevoir_signal() == "lumiere":
+            nv_de_lum()
+        else:
+            pass
+        if display.read_light_level() < 25 :        
+            for larg in range(5) :     
+                for haut in range(5) :
+                    display.set_pixel(larg,haut,0)
