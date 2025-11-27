@@ -169,30 +169,6 @@ def establish_connexion(key):
         sleep(100)
 
 
-
-
-        """  receive_packet(response_packet, key)
-            if parts[0] == "RESPONSE":
-                received_hash == parts[2].split('|')[0]   
-                if received_hash == hashing(nonce):
-                    return True                   
-        sleep(100)  
-    return False #indique le temps mort        
-
-    #Programme principal
-display.show(Image.SAD)
-                 
-                          #On Vérifie si c'est la reponse qu on attend
-            expected_response = hashing(nonce)
-                if response == expected_response:
-                    display.show(Image.YES)    # indique la réception de la réponse correcte
-                    return True  # la connexion est bien etablie
-                else:
-                    display.show(Image.NO)     #indique une réception incorrecte
-                    return False  # échec de la reception de la réponse
-        sleep(100)
-
-    """
     
 
 def main():
