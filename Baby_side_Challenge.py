@@ -163,7 +163,7 @@ def etat_sommeil_bebe():
         for valeur in etats_sommeil:
             compteur[valeur] += 1
         etat_actuel = compteur.index(max(compteur))
-        display.show(symboles[etat_actuel])
+        radio.send(symboles[etat_actuel])
     sleep(100)
 
 def musique():
@@ -189,46 +189,25 @@ def musique():
 """renvoi la luminosité au be:bi parent => manque la fct send package"""
 
 def nv_de_lum():
-
     if display.read_light_level() < 25 : 
-
-        """envoi d' un package disant lumière éteinte et 0"""
-    
+        """envoi d' un package disant lumière éteinte et 0"""  
     elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
-
        """envoi d' un package disant lumière presque éteinte et 1"""
-
     elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
-
         """envoi d' un package disant lumière très faible et 2"""
-
     elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
-
          """envoi d' un package disant lumière  faible et 3"""
-
     elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
-
         """envoi d' un package disant lumière moyenne et 4"""
-
     elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
-
         """envoi d' un package disant lumière  bonne et  5"""
-
     elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
-
-        """envoi d' un package disant lumière  normale et 6"""   
-        
+        """envoi d' un package disant lumière  normale et 6"""         
     elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
-
         """envoi d' un package disant lumière  haute et 7""" 
-
-
     elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
-
         """envoi d' un package disant lumière très haute et 8"""
-
     else :
-
         """"envoi d' un package disant lumière extrème et 9"""
 
 running = True
