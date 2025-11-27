@@ -25,6 +25,7 @@ def hashing(string):
 	:param (str) string: la chaîne de caractères à hacher
 	:return (str): le résultat du hachage
 	"""
+    
 	def to_32(value):
 		"""
 		Fonction interne utilisée par hashing.
@@ -130,7 +131,12 @@ def unpack_data(encrypted_packet, key):
     if len(parts) != 3 :
         return "", 0, ""   # un paquet vide
     #continuer le code encore manque donnée
-    
+    T = parts[0]                     # Le type
+    L = int(parts[1])                # La longueur( converti en entier)
+    V = parts[2]                     # La valeur (donnée)
+
+    return T, L, V
+
 def receive_packet(packet_received, key):
     """
     Traite les paquets reçus via l'interface radio du micro:bit
@@ -140,10 +146,10 @@ def receive_packet(packet_received, key):
     :param (str) packet_received: Paquet reçue
            (str) key:              Clé de chiffrement
 	:return (srt)type:             Type de paquet
-            (int)lenght:           Longueur de la donnée en caractère
+            (int)lenght:           Longueur de la donnée en caractère 
             (str) message:         Données reçue
     """
-    
+    T, L, V = unpack_data(packet_received, key)
     
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
