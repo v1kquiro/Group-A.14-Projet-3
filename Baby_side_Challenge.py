@@ -119,6 +119,7 @@ def envoyer_signal(message):
 
 def recevoir_signal():
     signal = radio.receive()
+	return signal
 
 
 #Calculate the challenge response
@@ -251,13 +252,14 @@ def nv_de_lum():
 
 running = True
 while running :
-    if recevoir_signal() == "etat_sommeil":
-        etat_sommeil_bebe()
-    elif recevoir_signal() == "musique":
-        musique()
-    elif recevoir_signal() == "temperature":
-        temperature()
-    elif recevoir_signal() == "lumiere":
-        nv_de_lum()
-    else:
-        pass
+	if message:
+    	if recevoir_signal() == "etat_sommeil":
+        	etat_sommeil_bebe()
+    	elif recevoir_signal() == "musique":
+        	musique()
+    	elif recevoir_signal() == "temperature":
+        	temperature()
+    	elif recevoir_signal() == "lumiere":
+        	nv_de_lum()
+    	else:
+        	pass
