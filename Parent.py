@@ -54,26 +54,33 @@ def log_data():
 def nourrir() :
     index = 0   
     while True  :      
+
+        faim = [Image.ANGRY, Image.ARROW_S]
+        display.show(faim, delay=1000, loop=False)
+        music.play(music.BA_DING)
+        
         if  button_b.was_pressed() :
             display.clear()
             index += 1 
             return index
         else :
-            faim = [Image.ANGRY, Image.ARROW_S]
+            
             display.show(faim, delay=1000, loop=False)
             music.play(music.BA_DING)
-            
-#fait en sorrte que l'alarme se joue toute les 3h et que on puisse utiliser les boutons peit importe le moment.
+
+
 def total_lait():   
     while True :
         index = 1
-        temps_alerte = 10000       
+        temps_alerte = 5000       
         début = running_time()    
         while True :            
-            if button_a.was_pressed() :              
-                display.show(index)                
-                sleep(2000)               
-                display.clear()             
+            if running_time() - début < temps_alerte :
+                if button_b.is_pressed() :
+                    display.show(index)                
+                    if button_b.is_pressed() :               
+                        sleep(1000) 
+                        display.clear()             
             elif running_time() - début >= temps_alerte :    
                 nourrir()                     
                 index +=1    
@@ -170,5 +177,6 @@ while running:
 
     if combinaison = True and button_a.was_pressed():
         combinaison = False
+
 
 
