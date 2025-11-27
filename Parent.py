@@ -28,6 +28,9 @@ def envoyer_signal(message):
     sleep(300)
     display.clear()
 
+def recevoir_signal(message)
+    return radio.receive
+
 log.set_labels('temperature','sound','light','etat_sommeil','musique')
 log.add({
     'temperature' : temperature(),
@@ -46,6 +49,35 @@ def log_data():
     'musique' : musique()
     })
     #log les entrees chaque 30 sec
+
+#def de la boucle de demande de nourrir et son clear
+def nourrir() :
+    index = 0   
+    while True  :      
+        if  button_b.was_pressed() :
+            display.clear()
+            index += 1 
+            return index
+        else :
+            faim = [Image.ANGRY, Image.ARROW_S]
+            display.show(faim, delay=1000, loop=False)
+            music.play(music.BA_DING)
+            
+#fait en sorrte que l'alarme se joue toute les 3h et que on puisse utiliser les boutons peit importe le moment.
+def total_lait():   
+    while True :
+        index = 1
+        temps_alerte = 10000       
+        début = running_time()    
+        while True :            
+            if button_a.was_pressed() :              
+                display.show(index)                
+                sleep(2000)               
+                display.clear()             
+            elif running_time() - début >= temps_alerte :    
+                nourrir()                     
+                index +=1    
+                début = running_time()
 
 running = True
 while running:
@@ -110,8 +142,6 @@ while running:
     sleep(100)
     #si les boutons A et B sont appuyer
 
-    sleep(200)
-
     #if button_a.was_pressed():
         #running = not running
     #if running:
@@ -149,31 +179,3 @@ while running:
 
     radio.send(str(currentTemp))
 
-#def de la boucle de demande de nourrir et son clear
-def nourrir() :
-    index = 0   
-    while True  :      
-        if  button_b.was_pressed() :
-            display.clear()
-            index += 1 
-            return index
-        else :
-            faim = [Image.ANGRY, Image.ARROW_S]
-            display.show(faim, delay=1000, loop=False)
-            music.play(music.BA_DING)
-            
-#fait en sorrte que l'alarme se joue toute les 3h et que on puisse utiliser les boutons peit importe le moment.
-def total_lait():   
-    while True :
-        index = 1
-        temps_alerte = 10000       
-        début = running_time()    
-        while True :            
-            if button_a.was_pressed() :              
-                display.show(index)                
-                sleep(2000)               
-                display.clear()             
-            elif running_time() - début >= temps_alerte :    
-                nourrir()                     
-                index +=1    
-                début = running_time()
