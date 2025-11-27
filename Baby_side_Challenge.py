@@ -235,7 +235,7 @@ def nv_de_lum():
 		temp = temperature()
 		radio.send("TEMP" + str(temp))
 
-		msg = radio.recieve()
+		msg = radio.receive()
 		if msg:
 			if msg == "TEMP":
 				radio.send("TEMP"+str(temp))
