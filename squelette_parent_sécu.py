@@ -104,7 +104,7 @@ def send_packet(key, type, content):
     packet_TLV = T + "|" + L + "|" + V       # "|" : separateur
     
     #chiffrement du packet
-    encrypted_packet = vigenere(packet_TLV,key)
+    encrypted_packet = vigenere(packet_TLV,key, decryption=False)
     #envoi via radio
     radio.send(encrypted_packet)
 
@@ -167,6 +167,22 @@ def calculate_challenge_response(challenge):    # ce lui le nonce
     challenge_response = hashing(challenge)
     return challenge_response
 
+
+def check_nonce(nonce):
+     """
+        Vérifie si le nonce a déjà utilisé 
+        Retourne True si le nonce est nouveau, False sinon
+        Retourne False si déjà vu(REJETE)
+    """
+     if nonce in nonce_list:
+         return False      # Si Déjà utilisé = attaque replay
+     
+     else:
+        nonce_list.add(nonce)   # l'ajouter a la liste
+        return True          # Nouveau nonce (ACCEPTE)
+#Ask for a new connection with a micro:bit of the same group
+
+
 #Respond to a connexion request by sending the hash value of the number received
 def respond_to_connexion_request(key):
     """
@@ -176,5 +192,42 @@ def respond_to_connexion_request(key):
     :param (str) key:                   Clé de chiffrement
 	:return (srt) challenge_response:   Réponse au challenge
     """
+    #on Attend un message de connexion
+    packet = radio.receive()
+
+    if packet:
+         #Onn decrypte et déballe le paquet reçu
+         decrypted = vigenere(packet, key, decryption=True)
+
+         # Le format attendu est TYPE|LENGTH|VALUE
+         parts = decrypted.split('|')
+
+         if len(parts) == 3 :
+              packet_type = parts[0]
+              nonce = parts[2]  # le nonce envoyer par l'enfant
+
+              #On verifie que c'est bien une demande de connexion
+              if packet_type == "CONNEXION":
+
+                #on verife le nonce comment il est 
+                if check_nonce(nonce) : 
+                     #nouveau nonce correct , on peut calculer la reponse
+                    response = hashing(nonce)
+
+                    #Envoyer la reponse
+                    response_packet = "RESPONSE|" + str(len(response)) + "|" + response
+                    encrypted = vigenere(response_packet, key)
+                    radio.send(encrypted)
+                    display.show(Image.YES)  # indique l'envoi de la réponse en cours
+                    return response     
+                else:
+                    # le nonce est déjà vu alors 
+                    display.show(Image.NO)   #nonce incorecte la  connex. est refusée
+
+                    return ""   
+    return ""
+
+
+
 
 def main():
