@@ -163,30 +163,34 @@ def nourrir() :
             music.play(music.BA_DING)
 
 #fait en sorrte que l'alarme se joue toute les 3h et que on puisse utiliser les boutons peit importe le moment.
-while True :
 
-    index = 1
-    temps_alerte = 10000
+def total_lait()
     
-    début = running_time()
-  
     while True :
+    
+        index = 1
+        temps_alerte = 10000
         
-        if button_a.was_pressed() :
+        début = running_time()
+      
+        while True :
             
-            display.show(index)
-            
-            sleep(2000)
-            
-            display.clear()
-
-           
-        
-        elif running_time() - début >= temps_alerte : 
-
-            nourrir() 
+            if button_a.was_pressed() :
                 
-            index +=1
+                display.show(index)
+                
+                sleep(2000)
+                
+                display.clear()
+    
+               
+            
+            elif running_time() - début >= temps_alerte : 
+    
+                nourrir() 
+                    
+                index +=1
+    
+                début = running_time()
 
-            début = running_time()
 
