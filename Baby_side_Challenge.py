@@ -118,7 +118,7 @@ def envoyer_signal(message):
     radio.send(message)
 
 def recevoir_signal():
-    radio.receive()
+    signal = radio.receive()
 
 
 #Calculate the challenge response
