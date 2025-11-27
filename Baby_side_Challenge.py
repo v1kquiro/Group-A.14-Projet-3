@@ -186,18 +186,6 @@ while running :
         display.scroll(message)
 
 
-"""calcul le nv de lumière pour pouvoir couper la lumière des leds du be:bi"""
-	while True  :
-
-    	if display.read_light_level() < 25 :
-            
-            for larg in range(5) :
-                
-                for haut in range(5) :
-                   
-                    display.set_pixel(larg,haut,0)
-
-
 """renvoi la luminosité au be:bi parent => manque la fct send package"""
 
 def nv_de_lum():
@@ -243,4 +231,22 @@ def nv_de_lum():
 
         """"envoi d' un package disant lumière extrème et 9"""
 
+	while True:
+		temp = temperature()
+		radio.send("TEMP" + str(temp))
+
+		msg = radio.recieve()
+		if msg:
+			if msg == "TEMP":
+				radio.send("TEMP"+str(temp))
+				display.clear()
+
+		"""calcul le nv de lumière pour pouvoir couper la lumière des leds du be:bi"""
+    	if display.read_light_level() < 25 :
+            
+            for larg in range(5) :
+                
+                for haut in range(5) :
+                   
+                    display.set_pixel(larg,haut,0)
 
