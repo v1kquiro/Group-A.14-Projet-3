@@ -85,15 +85,15 @@ while running:
     combinaison = False
     A = 0
     B = 0
-    key = Image(
+    debut_appui_A = None
+    while not combinaison:
+        key = Image(
             "00900:"
             "09990:"
             "00900:"
             "09900:"
             "00900:"
         )
-    debut_appui_A = None
-    while not combinaison:
         display.show(key)
         if button_b.was_pressed():
             B += 1
@@ -128,17 +128,6 @@ while running:
                     display.show("A")
                     sleep(200)
             debut_appui_A = None
-    message = radio.receive()
-    if message:
-        display.scroll(message)
-        #recevoir les msgs
-
-    if button_a.is_pressed() and button_b.is_pressed():
-        display.scroll('A and B')
-    elif button_a.is_pressed():
-        display.scroll('A')
-    elif button_b.is_pressed():
-        display.scroll('B')
     sleep(100)
     #si les boutons A et B sont appuyer
 
@@ -178,4 +167,8 @@ while running:
     #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
+
+    if combinaison = True and button_a.was_pressed():
+        combinaison = False
+
 
