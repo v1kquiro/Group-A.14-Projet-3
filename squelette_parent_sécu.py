@@ -131,9 +131,10 @@ def unpack_data(encrypted_packet, key):
     if len(parts) != 3 :
         return "", 0, ""   # un paquet vide
     #continuer le code encore manque donnée
-    T = parts[0]                     # Le type
-    L = int(parts[1])                # La longueur( converti en entier)
-    V = parts[2]                     # La valeur (donnée)
+	else:
+		T = parts[0]                     # Le type
+    	L = int(parts[1])                # La longueur( converti en entier)
+    	V = parts[2]                     # La valeur (donnée)
 
     return T, L, V
 
