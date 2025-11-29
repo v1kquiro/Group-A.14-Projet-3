@@ -53,12 +53,12 @@ def hashing(string):
 	return ""
     
 def vigenere(message, key, decryption=False):
-    text = ""
+    text = ""                   
     key_length = len(key)
     key_as_int = [ord(k) for k in key]
 
     for i, char in enumerate(str(message)):
-        #Letters encryption/decryption
+        #Letters encryption/decryptio
         if char.isalpha():
             key_index = i % key_length
             if decryption:
@@ -104,7 +104,7 @@ def send_packet(key, type, content):
     packet_TLV = T + "|" + L + "|" + V       # "|" : separateur
     
     #chiffrement du packet
-    encrypted_packet = vigenere(packet_TLV,key, decryption=False)
+    encrypted_packet = vigenere(packet_TLV, key, decryption=False)
     #envoi via radio
     radio.send(encrypted_packet)
 
@@ -127,17 +127,18 @@ def unpack_data(encrypted_packet, key):
     #séparer selon le délimitieur "|"
     parts = decrypted_packet.split("|")
     
-      #verifie que l'on a bien le 3 parties (T, L, V)
-  if len(parts) == 3 :
-      T = parts[0]                     # Le type
-      L = int(parts[1])                # La longueur( converti en
-      V = parts[2]                     # La valeur (donnée)
-      return T, L, V
-  
-  #continuer le code encore manque donnée
-  else:
-      return "", 0, ""   # renvoi paquet vide en cas d'erreur 
-
+    #verifie que l'on a bien le 3 parties (T, L, V)
+    if len(parts) == 3 :
+        T = parts[0]                     # Le type
+        L = int(parts[1])                # La longueur( converti en entier)
+        V = parts[2]                     # La valeur (donnée)
+        return T, L, V
+    
+    #continuer le code encore manque donnée
+    else:
+        return "", 0, ""   # renvoi paquet vide en cas d'erreur 
+        
+        
 def receive_packet(packet_received, key):
     """
     Traite les paquets reçus via l'interface radio du micro:bit
@@ -155,8 +156,8 @@ def receive_packet(packet_received, key):
         return T, L, V
     
     except: 
-        return "",0, ""
-    
+        return "",0, ""  
+              
 #Calculate the challenge response 
 def calculate_challenge_response(challenge):    # ce lui le nonce
     """
@@ -165,23 +166,10 @@ def calculate_challenge_response(challenge):    # ce lui le nonce
     :param (str) challenge:            Challenge reçu
 	:return (srt)challenge_response:   Réponse au challenge
     """
-    challenge_response = hashing(challenge)
-    return challenge_response
 
+    challenge_response = hashing(challenge) 
+    return challenge_response 
 
-def check_nonce(nonce):
-     """
-        Vérifie si le nonce a déjà utilisé 
-        Retourne True si le nonce est nouveau, False sinon
-        Retourne False si déjà vu(REJETE)
-    """
-     if nonce in nonce_list:
-         return False      # Si Déjà utilisé = attaque replay
-     
-     else:
-        nonce_list.add(nonce)   # l'ajouter a la liste
-        return True          # Nouveau nonce (ACCEPTE)
-#Ask for a new connection with a micro:bit of the same group
 
 
 #Respond to a connexion request by sending the hash value of the number received
@@ -228,7 +216,22 @@ def respond_to_connexion_request(key):
                     return ""   
     return ""
 
+def main():        # le parent atend le signe, de l'enfant
+    global connexion_established
+    global baby_state
 
-
-
-def main():
+    while True:
+        if not connexion_established:
+              # ici il est passif il attend la connexion du bebe
+            result = respond_to_connexion_request(key)
+            if result:
+                 connexion_established = True
+            else:
+                 # il reçoit les status du bébé
+                incoming = radio.receive()
+                if incoming:
+                     packet_T, L, V = receive_packet(incoming, key)
+                     if T == "CRYING":                  # T= message
+                        baby_state = 1
+                        display.show(Image.SAD)
+                        music.play(music.POWER_DOWN) 
