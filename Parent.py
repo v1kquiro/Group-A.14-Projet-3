@@ -28,7 +28,7 @@ def envoyer_signal(message):
     sleep(300)
     display.clear()
 
-def recevoir_signal(message)
+def recevoir_signal(message):
     return radio.receive
 
 log.set_labels('temperature','sound','light','etat_sommeil','musique')
@@ -86,6 +86,82 @@ def total_lait():
                 index +=1    
                 début = running_time()
 
+def snake():
+    # Variables
+    score = 0
+    game_over = False
+    lumiere = 0
+    up = (0, -1)
+    down = (0, 1)
+    left = (-1, 0)
+    right = (1, 0)
+    direction = up
+    # Situations initiale
+    snake = [(2, 2)]
+    fruit = (random.randint(0, 4), random.randint(0, 4))
+
+    # Boucle principale
+    while not game_over:
+        if button_a.was_pressed():
+            if direction == up:
+                direction = left
+            elif direction == left:
+                direction = down
+            elif direction == down:
+                direction = right
+            elif direction == right:
+                direction = up
+        if button_b.was_pressed():
+            if direction == up:
+                direction = right
+            elif direction == left:
+                direction = up
+            elif direction == down:
+                direction = left
+            elif direction == right:
+                direction = down
+        # Actualisation de la tête du serpent
+        direction_en_x = snake[0][0] + direction[0]
+        direction_en_y = snake[0][1] + direction[1]
+        # Téléportations et collisions
+        if direction_en_x< 0:
+            direction_en_x= 4
+        elif direction_en_x > 4:
+            direction_en_x = 0
+        if direction_en_y < 0:
+            direction_en_y = 4
+        elif direction_en_y > 4:
+            direction_en_y = 0
+        nouvelle_direction = (direction_en_x, direction_en_y)
+        # Nettoyage de l'écran
+        display.clear()
+        if nouvelle_direction in snake:
+            game_over = True
+        else:
+            snake.insert(0, nouvelle_direction)
+        if nouvelle_direction == fruit:
+            fruit = (random.randint(0, 4), random.randint(0, 4))
+            score += 1
+            while fruit in snake:
+                fruit = (random.randint(0, 4), random.randint(0, 4))
+        else:
+            snake.pop()
+            
+        # Fruit
+        display.set_pixel(fruit[0], fruit[1], 4)
+        # Serpent
+        for i in range(len(snake)):
+            if i == 0:
+                lumiere = 9
+            else:
+                lumiere = 7
+            display.set_pixel(snake[i][0], snake[i][1], lumiere)
+        sleep(750)
+        
+    # Si game_over == True
+    display.scroll("GAME OVER", 50)
+    display.scroll(str(score), 200)
+
 running = True
 while running:
     temps_maintenu = 1000
@@ -122,6 +198,8 @@ while running:
                     envoyer_signal("temperature")
                 elif A == 2 and B == 1:
                     envoyer_signal("lumiere")
+                elif A == 3 and B == 1:
+                    snake()
                 else:
                     display.scroll("Reset", 60)
                     A = 0
@@ -175,8 +253,9 @@ while running:
 
     radio.send(str(currentTemp))
 
-    if combinaison = True and button_a.was_pressed():
+    if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
