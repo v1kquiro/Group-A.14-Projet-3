@@ -169,9 +169,18 @@ def calculate_challenge_response(challenge):    # ce lui le nonce
 
     challenge_response = hashing(challenge) 
     return challenge_response 
-
-
-
+def check_nonce:
+	"""
+	Vérifie si le nonce a déjà était utilisé
+	Retourne True si le nonce est nouveau, False sinon
+	Retourne False si déjà vu(il REJETE)
+	"""
+	if nonce in nonce_liste:
+		return False                # si le nonce a deja était utiliser (pour eviter une attaque exterieur de type replay "utilisatrion d'ancien nonce pour tromper l'enfant")
+	else:
+		nonce_list.add(nonce)   # on va ajouter nonce s il  n est pas là
+		return True       # Un nouveau nonce est accepter           
+		
 #Respond to a connexion request by sending the hash value of the number received
 def respond_to_connexion_request(key):
     """
