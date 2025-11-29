@@ -31,6 +31,16 @@ def envoyer_signal(message):
 def recevoir_signal(message):
     return radio.receive
 
+def etat_sommeil_bebe():
+    mouvement = accelerometer.get_strength()
+    if mouvement < 1500:
+        return 1
+    else:
+        return 0
+
+def musique():
+    return 0
+
 log.set_labels('temperature','sound','light','etat_sommeil','musique')
 log.add({
     'temperature' : temperature(),
@@ -255,7 +265,3 @@ while running:
 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
-
-
-
-
