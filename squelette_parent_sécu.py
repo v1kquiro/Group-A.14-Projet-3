@@ -127,16 +127,16 @@ def unpack_data(encrypted_packet, key):
     #séparer selon le délimitieur "|"
     parts = decrypted_packet.split("|")
     
-    #verifie que l'on a bien le 3 parties (T, L, V)
-    if len(parts) != 3 :
-        return "", 0, ""   # un paquet vide
-    #continuer le code encore manque donnée
-	else:
-		T = parts[0]                     # Le type
-    	L = int(parts[1])                # La longueur( converti en entier)
-    	V = parts[2]                     # La valeur (donnée)
-
-    return T, L, V
+      #verifie que l'on a bien le 3 parties (T, L, V)
+  if len(parts) == 3 :
+      T = parts[0]                     # Le type
+      L = int(parts[1])                # La longueur( converti en
+      V = parts[2]                     # La valeur (donnée)
+      return T, L, V
+  
+  #continuer le code encore manque donnée
+  else:
+      return "", 0, ""   # renvoi paquet vide en cas d'erreur 
 
 def receive_packet(packet_received, key):
     """
