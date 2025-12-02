@@ -1,6 +1,6 @@
 from microbit import *
 import radio
-import random
+#import random
 import music 
 
 #Can be used to filter the communication, only the ones with the same parameters will receive messages
@@ -137,8 +137,7 @@ def unpack_data(encrypted_packet, key):
     #continuer le code encore manque donnée
     else:
         return "", 0, ""   # renvoi paquet vide en cas d'erreur 
-        
-        
+          
 def receive_packet(packet_received, key):
     """
     Traite les paquets reçus via l'interface radio du micro:bit
@@ -168,19 +167,9 @@ def calculate_challenge_response(challenge):    # ce lui le nonce
     """
 
     challenge_response = hashing(challenge) 
-    return challenge_response 
-def check_nonce:
-	"""
-	Vérifie si le nonce a déjà était utilisé
-	Retourne True si le nonce est nouveau, False sinon
-	Retourne False si déjà vu(il REJETE)
-	"""
-	if nonce in nonce_liste:
-		return False                # si le nonce a deja était utiliser (pour eviter une attaque exterieur de type replay "utilisatrion d'ancien nonce pour tromper l'enfant")
-	else:
-		nonce_list.add(nonce)   # on va ajouter nonce s il  n est pas là
-		return True       # Un nouveau nonce est accepter           
-		
+    return challenge_response
+
+
 #Respond to a connexion request by sending the hash value of the number received
 def respond_to_connexion_request(key):
     """
@@ -199,33 +188,30 @@ def respond_to_connexion_request(key):
 
          # Le format attendu est TYPE|LENGTH|VALUE
          parts = decrypted.split('|')
-
+         nonce = parts[2] 
+         response = calculate_challenge_response(nonce)  
+         # le nonce envoyer par l'enfant
          if len(parts) == 3 :
-              packet_type = parts[0]
-              nonce = parts[2]  # le nonce envoyer par l'enfant
+            packet_type = parts[0]
+            nonce = parts[2]      
 
               #On verifie que c'est bien une demande de connexion
-              if packet_type == "CONNEXION":
+            if packet_type == "CONNECT":
 
-                #on verife le nonce comment il est 
-                if check_nonce(nonce) : 
-                     #nouveau nonce correct , on peut calculer la reponse
-                    response = hashing(nonce)
-
-                    #Envoyer la reponse
-                    response_packet = "RESPONSE|" + str(len(response)) + "|" + response
-                    encrypted = vigenere(response_packet, key)
-                    radio.send(encrypted)
-                    display.show(Image.YES)  # indique l'envoi de la réponse en cours
-                    return response     
-                else:
+                #Envoyer la reponse 
+                response_packet = "RESPONSE|" + str(len(response)) + "|" + response
+                encrypted = vigenere(response_packet, key, decryption=False)
+                radio.send(encrypted)
+                display.show(Image.YES)  # indique l'envoi de la réponse en cours par un YES
+                return response     
+            else:
                     # le nonce est déjà vu alors 
-                    display.show(Image.NO)   #nonce incorecte la  connex. est refusée
+                display.show(Image.NO)   #nonce incorecte la  connex. est refusée et le micro:bit affiche NO
 
-                    return ""   
+                return ""   
     return ""
 
-def main():        # le parent atend le signe, de l'enfant
+def main():        # le parent attend le signe de l'enfant
     global connexion_established
     global baby_state
 
@@ -236,11 +222,16 @@ def main():        # le parent atend le signe, de l'enfant
             if result:
                  connexion_established = True
             else:
-                 # il reçoit les status du bébé
+                # le parent reçoit les status du bébé
                 incoming = radio.receive()
                 if incoming:
-                     packet_T, L, V = receive_packet(incoming, key)
-                     if T == "CRYING":                  # T= message
-                        baby_state = 1
+                     packet_T = receive_packet(incoming, key)
+                     if packet_T == "CRYING":                  # packet_T = message
+                        baby_state = 1                     # l etat du bebe est qu il pleur si c'est 0 il ne se passe rien
                         display.show(Image.SAD)
                         music.play(music.POWER_DOWN) 
+                     else :
+                        packet_T == "GOOD"         # si le bebe est content
+                        baby_state = 0
+                        display.show(Image.HAPPY)   # indique que le bebe est content
+                        music.play(music.POWER_UP)
