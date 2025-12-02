@@ -194,29 +194,46 @@ def musique():
 	music.play(star_wars)
 
 
-"""renvoi la luminosité au be:bi parent => manque la fct send package"""
-
-def nv_de_lum():
-    if display.read_light_level() < 25 : 
-        """envoi d' un package disant lumière éteinte et 0"""  
-    elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
-       """envoi d' un package disant lumière presque éteinte et 1"""
-    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
-        """envoi d' un package disant lumière très faible et 2"""
-    elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
-         """envoi d' un package disant lumière  faible et 3"""
-    elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
-        """envoi d' un package disant lumière moyenne et 4"""
-    elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
-        """envoi d' un package disant lumière  bonne et  5"""
-    elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
-        """envoi d' un package disant lumière  normale et 6"""         
-    elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
-        """envoi d' un package disant lumière  haute et 7""" 
-    elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
-        """envoi d' un package disant lumière très haute et 8"""
-    else :
-        """"envoi d' un package disant lumière extrème et 9"""
+def calcul_lumiere() :
+        if display.read_light_level() < 25 : 
+            radio.send('lum eteinte')
+            display.scroll(0)
+        elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
+            radio.send('lum quasi eteinte')
+            display.scroll(1)
+        elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+            radio.send('lum très faible')
+            display.scroll(2)
+        elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
+              radio.send('lum faible')
+              display.scroll(3)
+        elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
+             radio.send('lum moyenne')
+             display.scroll(4)
+        elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
+             radio.send('lum bonne')
+             display.scroll(5)
+        elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
+             radio.send('lum normale') 
+             display.scroll(6)
+        elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
+             radio.send('lum haute')
+             display.scroll(7)
+        elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
+             radio.send('lum tres haute')
+             display.scroll(8)
+        else :
+             radio.send('lum ex')
+             display.scroll(9)
+#regarde la lumière et envoie un message au microbit parent du niveau de celle-ci
+def nv_de_lum() :   
+    envoi_avis = 600000
+    starting_time = running_time()
+    while True :  
+        if running_time() - starting_time > envoi_avis :
+            calcul_lumiere()
+            starting_time = running_time()
+#défini quand la lumière dois être envoyé
 
 running = True
 while running :
