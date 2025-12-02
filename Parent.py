@@ -96,6 +96,7 @@ def total_lait():
                 index +=1    
                 début = running_time()
 
+# Fonction permettant de jouer au jeu snake
 def snake():
     # Variables
     score = 0
@@ -172,6 +173,7 @@ def snake():
     display.scroll("GAME OVER", 50)
     display.scroll(str(score), 200)
 
+# Boucle principale
 running = True
 while running:
     temps_maintenu = 1000
@@ -180,6 +182,7 @@ while running:
     B = 0
     debut_appui_A = None
     while not combinaison:
+        # Image de clé
         key = Image(
             "00900:"
             "09990:"
@@ -188,13 +191,16 @@ while running:
             "00900:"
         )
         display.show(key)
+        # Si bouton b appuyé
         if button_b.was_pressed():
             B += 1
             display.show("B")
             sleep(200)
+        # Les deux cas de figure si bouton a appuyé
         if button_a.is_pressed():
             if debut_appui_A is None: 
                 debut_appui_A = running_time()
+            # Appui maintenu sur le bouton A (+ que 1 sec)
             if running_time() - debut_appui_A >= temps_maintenu:
                 if A == 1 and B == 1:
                     combinaison = True
@@ -210,6 +216,7 @@ while running:
                     envoyer_signal("lumiere")
                 elif A == 3 and B == 1:
                     snake()
+                # Si aucune combinaison ne correspond
                 else:
                     display.scroll("Reset", 60)
                     A = 0
@@ -218,6 +225,7 @@ while running:
         else:
             if debut_appui_A is not None:
                 duree = running_time() - debut_appui_A
+                # Appui court sur le bouton A
                 if duree < temps_maintenu:
                     A += 1
                     display.show("A")
@@ -263,5 +271,7 @@ while running:
 
     radio.send(str(currentTemp))
 
+    # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
