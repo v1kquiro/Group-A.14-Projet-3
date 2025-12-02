@@ -78,11 +78,11 @@ def nourrir() :
             display.show(faim, delay=1000, loop=False)
             music.play(music.BA_DING)
 
-
+#crée un index qui s'incrémente chzque fois que lke bébé est nourri et crée un moyen de stopper l'alarme
 def total_lait():   
     while True :
         index = 1
-        temps_alerte = 5000       
+        temps_alerte = 10800000       
         début = running_time()    
         while True :            
             if running_time() - début < temps_alerte :
@@ -274,4 +274,5 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
