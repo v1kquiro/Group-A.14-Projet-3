@@ -111,10 +111,11 @@ def receive_packet(packet_received, key):
             (int)lenght:           Longueur de la donnée en caractère
             (str) message:         Données reçue
     """
-
+# Fonction permettant d'envoyer des messages au bebi parent
 def envoyer_signal(message):
     radio.send(message)
 
+# Fonction permettant de recevoir des messages du bebi parent
 def recevoir_signal():
     signal = radio.receive()
 	return signal
@@ -141,31 +142,39 @@ def establish_connexion(key):
 
 etats_sommeil = []
 symboles = ["-", "1", "2"]
+# Fonction gérant l'état de sommeil du bébé
 def etat_sommeil_bebe():
     compteur = [0, 0, 0]
+	# Composantes de l'accélération
     x = accelerometer.get_x()
     y = accelerometer.get_y()
     z = accelerometer.get_z()
     # Norme de l'accélération
     acceleration = math.sqrt((x**2) + (y**2) + (z**2))
     acceleration = m.sqrt((x**2) + (y**2) + (z**2))
-    # "-" = endormi, "1" = agité, "2" = très agité
+    # "0" = endormi, "1" = agité, "2" = très agité
     if acceleration <= 1100:
         etats_sommeil.append(0)
     elif 1100 < acceleration <= 1500:
         etats_sommeil.append(1)
     else:
         etats_sommeil.append(2)
+	# On supprime chaque fois le premier élément de la liste si plus de 12 éléments
     if len(etats_sommeil) == 12:
          etats_sommeil.pop(0)
+	# Si 11 éléments dans la liste
     if len(etats_sommeil) == 11:
         for valeur in etats_sommeil:
             compteur[valeur] += 1
         etat_actuel = compteur.index(max(compteur))
+		# On renvoie au bebi parent le symbole correspondant à l'état de sommeil
         radio.send(symboles[etat_actuel])
+	# Prend une mesure toutes les 0,1 seconde
     sleep(100)
 
+# Fonction jouant une musique pour le bébé
 def musique():
+	# Musique de Star Wars
 	star_wars = [
     	"A4:2","A4:2","A4:2",
     	"F4:1","C5:1",
