@@ -170,44 +170,6 @@ def establish_connexion(key):
     :param (str) key:                  Clé de chiffrement
 	:return (srt)challenge_response:   Réponse au challenge
     """
-    # Generer un nombre aleatoire pour aleatoire( 8 chiffres )
-    nonce = str(random.randint(10000000, 99999999))  # Générer un nonce aleatoire
-    display.scroll("N:" + nonce[:4]) # vas afficher les 4 premieers chiffres
-
-    # on consrtuit le paquet de demande de connexion
-    packet_type="CONNECT"
-    content = nonce
-    #Envoyer le challenge
-    send_packet(key, packet_type, content)
-    display.show(Image.ARROW_E)  # indique l'envoi du challenge en cours
-
-    #Attendre la réponse (timeout de 2 secondes)
-    start_time = running_time()
-    timeout = 2000  #2secondes
-    while running_time() - start_time < timeout:    
-        response_packet = radio.receive()
-        if response_packet:
-            #Decrypte et déballe la reponse(paquet) réçue
-            decrypted = vigenere(response_packet, key, decryption=True)
-            parts = decrypted.split('|')
-
-            if len(parts) == 3:
-                 response_type = parts[0]
-                 received_hash = parts[2]
-
-                 # On verifie que c'est bie une reponse
-                if response_type == "RESPONSE":
-                    #Calculer ce que devrait etre le hash
-                    expected_hash = hashing(nonce)
-
-                    #Comparer
-                    if received_hash == expected_hash:
-                        display.show(Image.YES) #hash correct !
-                        return True # la connexion est bien etablie
-                    else:
-                        display.show(Image.No) #hash incorrect
-                        return False
-        sleep(100)
     
 
 def main():     # ici je retiens que le gosse est actif 
