@@ -1,4 +1,4 @@
-from tkinter import Image
+#from tkinter import Image
 from microbit import *
 import radio
 import random
@@ -159,6 +159,9 @@ def calculate_challenge_response(challenge):
     :param (str) challenge:            Challenge reçu
 	:return (srt)challenge_response:   Réponse au challenge
     """
+    # ici on calcule la reponse au challenge en hachant le challenge
+    challenge_response = hashing(challenge)
+    return challenge_response
 
 
 #Ask for a new connection with a micro:bit of the same group
@@ -170,7 +173,41 @@ def establish_connexion(key):
     :param (str) key:                  Clé de chiffrement
 	:return (srt)challenge_response:   Réponse au challenge
     """
-    
+    #on genere un challlenge aléatoire de 8 chiffres (le challenge)
+    challenge = str(random.randint(10000000, 99999999))
+    display.scroll("N :" + challenge[:4]) # affiche les 4 premier chiffre du challenge pour debug en cas de probleme de connexion
+
+     # On construit et on envoi un paquet(message) de connexion
+    send_packet(key, "CONNECT", challenge) 
+    display.show(Image.ARROW_E)  #le micro:bit affiche qu il cherche a se connecter avec une fleche a droite
+
+    # ensuite on attend une reponse du parent 
+    start_time = running_time()      # on enregistre le moment de depart
+    while running_time() - start_time < 10000:   # on attendra 10s
+        packet = radio.receive()   # on ecoute la radio pour une reponse
+        calculate_challenge_reponse = hashing(challenge)
+        
+        # si le paquet à été reçu 
+        if packet:
+             packet_type, length, response = receive_packet(packet,key)  # dechiffrement et extraction du paquet, ici receive_packet retournera 
+             if packet_type == "RESPONSE":
+                  expected = calculate_challenge_reponse(challenge)
+                 return 
+                  # on compare la reponse recu a la reponse attendu
+                  if response == expected:          # si le hash est correct = authentification reussie
+                       display.show(Image.YES)      # connexion établie le micro:bit affiche YES 
+                       return expected              # on retourne la reponse attendue
+                  else:   
+                       # si hash incorrect = echec d authetification 
+                       display.show(Image.NO)   
+                       return ""   #return vide si echec et bebi affiche NO   
+
+        sleep(100) # pause pour eviter de surcharger le bebi sinon il s'eteint
+
+    display.show(Image.SAD)   # timeout, le parent n'as pas repondu a temps et le bebi affiche NO
+    return ""   # return vide si echec
+
+
 
 def main():     # ici je retiens que le gosse est actif 
     global connexion_established
@@ -183,7 +220,14 @@ def main():     # ici je retiens que le gosse est actif
                 if result :
                     connexion_established = True
         else:
-              # il envoi un status
+              # le bebi envoi un status
              if button_a.was_pressed():
-                  send_packet(key, "STATUS", "CRYING")
-            
+                  send_packet(key, "STATUS", "CRYING")   # le bebe est en pleur
+                  display.show(Image.SAD)   # indique que le bebe pleur
+                  music.play(music.BA_DING)   
+             elif button_b.was_pressed():
+                  send_packet(key, "STATUS", "GOOD")  # le bebe est content
+                  display.show(Image.HAPPY)   # indique que le bebe est content
+                  music.play(music.POWER_UP) 
+        sleep(100)  # pause pour eviter de surcharger le bebi sinon il s'eteint
+        
