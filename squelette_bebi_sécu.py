@@ -8,7 +8,9 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
-
+radio.on()
+key = "KEYWORD" # Clé de chiffrement partagée entre les deux micro:bits
+connexion_established = False  # Clé de connexion temporaire pour l'établissement de la connexion
 
 def hashing(string):
 	"""
@@ -178,21 +180,19 @@ def establish_connexion(key):
     display.scroll("N :" + challenge[:4]) # affiche les 4 premier chiffre du challenge pour debug en cas de probleme de connexion
 
      # On construit et on envoi un paquet(message) de connexion
-    send_packet(key, "CONNECT", challenge) 
+    send_packet(key, "0x01", challenge) 
     display.show(Image.ARROW_E)  #le micro:bit affiche qu il cherche a se connecter avec une fleche a droite
 
     # ensuite on attend une reponse du parent 
     start_time = running_time()      # on enregistre le moment de depart
     while running_time() - start_time < 10000:   # on attendra 10s
         packet = radio.receive()   # on ecoute la radio pour une reponse
-        calculate_challenge_reponse = hashing(challenge)
         
         # si le paquet à été reçu 
         if packet:
-             packet_type, length, response = receive_packet(packet,key)  # dechiffrement et extraction du paquet, ici receive_packet retournera 
+             packet_type, _, response = receive_packet(packet,key)  # dechiffrement et extraction du paquet, ici receive_packet retournera 
              if packet_type == "RESPONSE":
-                  expected = calculate_challenge_reponse(challenge)
-                 return 
+                  expected = hashing(challenge)
                   # on compare la reponse recu a la reponse attendu
                   if response == expected:          # si le hash est correct = authentification reussie
                        display.show(Image.YES)      # connexion établie le micro:bit affiche YES 
@@ -222,11 +222,11 @@ def main():     # ici je retiens que le gosse est actif
         else:
               # le bebi envoi un status
              if button_a.was_pressed():
-                  send_packet(key, "STATUS", "CRYING")   # le bebe est en pleur
+                  send_packet(key, "0x03", "CRYING")   # le bebe est en pleur ( etat d'eveil du nourrisson)
                   display.show(Image.SAD)   # indique que le bebe pleur
                   music.play(music.BA_DING)   
              elif button_b.was_pressed():
-                  send_packet(key, "STATUS", "GOOD")  # le bebe est content
+                  send_packet(key, "0x03", "GOOD")  # le bebe est content
                   display.show(Image.HAPPY)   # indique que le bebe est content
                   music.play(music.POWER_UP) 
         sleep(100)  # pause pour eviter de surcharger le bebi sinon il s'eteint
