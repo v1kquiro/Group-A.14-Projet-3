@@ -1,20 +1,20 @@
 from microbit import *
 import radio
-#import random
+import random
 import music 
 
 #Can be used to filter the communication, only the ones with the same parameters will receive messages
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
-#Initialisation des variables du micro:bit
+#Initialisation des variables du micro:bit      
 radio.on()
-connexion_established = False
-key = "KEYWORD"
-connexion_key = None
-nonce_list = set()
-baby_state = 0
-set_volume(100)
+connexion_established = False # Indique si la connexion est établie
+key = "KEYWORD"               # Clé de chiffrement partagée entre les deux micro:bits
+connexion_key = None          # Clé de connexion temporaire pour l'établissement de la connexion
+nonce_list = set()            # Liste des nonces déjà vus pour éviter les rejets de connexion
+baby_state = 0                # 0 : bébé calme, 1 : bébé qui pleure
+set_volume(100)               # volume maximal
 
 def hashing(string):
 	"""
@@ -96,9 +96,9 @@ def send_packet(key, type, content):
     #T: type du message
     T = type
     #L : Longeur du message
-    L= str(len(content))
+    L = str(len(content))
     #V = content or value
-    V= content
+    V = content
     
     # Assemblage du Format TLV
     packet_TLV = T + "|" + L + "|" + V       # "|" : separateur
@@ -169,6 +169,23 @@ def calculate_challenge_response(challenge):    # ce lui le nonce
     challenge_response = hashing(challenge) 
     return challenge_response
 
+def verification_nonce(nonce):
+    """
+    Vérifie si le nonce a dejà été utilisé
+    return True si le nonce est nouveau(donc accepte)
+    return False si le nonce si nonce déjà vu(réjette)
+    
+    :param(str): nonce: Nonce a vérifer
+    :return (bool): True si c'est nouveau et False si c'est déja utilisé
+    """
+    global nonce_list
+
+    if nonce in nonce_list:
+         return False   # si le nonce est déjà utilisé
+    else: 
+         nonce_list.add(nonce)
+         return True  # seulement si le nonce est nouveau
+
 
 #Respond to a connexion request by sending the hash value of the number received
 def respond_to_connexion_request(key):
@@ -179,37 +196,29 @@ def respond_to_connexion_request(key):
     :param (str) key:                   Clé de chiffrement
 	:return (srt) challenge_response:   Réponse au challenge
     """
+    global connexion_key
     #on Attend un message de connexion
     packet = radio.receive()
-
+    
     if packet:
-         #Onn decrypte et déballe le paquet reçu
-         decrypted = vigenere(packet, key, decryption=True)
-
-         # Le format attendu est TYPE|LENGTH|VALUE
-         parts = decrypted.split('|')
-         nonce = parts[2] 
-         response = calculate_challenge_response(nonce)  
-         # le nonce envoyer par l'enfant
-         if len(parts) == 3 :
-            packet_type = parts[0]
-            nonce = parts[2]      
-
-              #On verifie que c'est bien une demande de connexion
-            if packet_type == "CONNECT":
-
-                #Envoyer la reponse 
-                response_packet = "RESPONSE|" + str(len(response)) + "|" + response
-                encrypted = vigenere(response_packet, key, decryption=False)
-                radio.send(encrypted)
+         #On dechiffre et déballe le paquet reçu
+        packet_type, _, nonce = receive_packet(packet, key)
+               #On verifie le nonce 
+        if packet_type == "0x01":         
+            # si le nonce est nouveau on accepte la connexion
+            if verification_nonce(nonce):  
+                response = calculate_challenge_response(nonce) 
+                connexion_key = response  # on stock la reponse pour la session de connexion
+            #on envoi la reponse au bebe au parent 
+                send_packet(key, "RESPONSE", response)
                 display.show(Image.YES)  # indique l'envoi de la réponse en cours par un YES
-                return response     
+                return response
             else:
-                    # le nonce est déjà vu alors 
+           # le nonce est déjà vu alors 
                 display.show(Image.NO)   #nonce incorecte la  connex. est refusée et le micro:bit affiche NO
-
-                return ""   
-    return ""
+                return ""
+    
+    return ""   
 
 def main():        # le parent attend le signe de l'enfant
     global connexion_established
@@ -221,17 +230,21 @@ def main():        # le parent attend le signe de l'enfant
             result = respond_to_connexion_request(key)
             if result:
                  connexion_established = True
-            else:
-                # le parent reçoit les status du bébé
-                incoming = radio.receive()
-                if incoming:
-                     packet_T = receive_packet(incoming, key)
-                     if packet_T == "CRYING":                  # packet_T = message
+                 display.show(Image.HAPPY)  # connexion établie le micro:bit affiche HAPPY
+        else:
+            # le parent reçoit les status du bébé une fois connecté
+            incoming = radio.receive()
+            if incoming:
+                packet_type, _ , message = receive_packet(incoming, key)  # voir comment mettre le msg
+
+                if packet_type == "0x03":  
+                    if message == "CRYING"                # packet_type = message 
                         baby_state = 1                     # l etat du bebe est qu il pleur si c'est 0 il ne se passe rien
                         display.show(Image.SAD)
                         music.play(music.POWER_DOWN) 
-                     else :
-                        packet_T == "GOOD"         # si le bebe est content
+
+                    elif message == "GOOOD" : # si le bebe est content
                         baby_state = 0
                         display.show(Image.HAPPY)   # indique que le bebe est content
                         music.play(music.POWER_UP)
+        sleep(100)  # pause pour eviter de surcharger le parent sinon il s'eteint
