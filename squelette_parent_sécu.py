@@ -239,7 +239,7 @@ def main():        # le parent attend le signe de l'enfant
                 packet_type, _ , message = receive_packet(incoming, key)  # voir comment mettre le msg
 
                 if packet_type == "0x03":  
-                    if message == "CRYING"                # packet_type = message 
+                    if message == "CRYING":               # packet_type = message 
                         baby_state = 1                     # l etat du bebe est qu il pleur si c'est 0 il ne se passe rien
                         display.show(Image.SAD)
                         music.play(music.POWER_DOWN) 
