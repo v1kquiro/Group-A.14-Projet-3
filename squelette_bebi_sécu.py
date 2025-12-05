@@ -8,7 +8,9 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
+
 radio.on()
+radio.config(group = 32, channel = 6, address = 0x11111111, power = 6 )
 key = "KEYWORD" # Clé de chiffrement partagée entre les deux micro:bits
 connexion_established = False  # Clé de connexion temporaire pour l'établissement de la connexion
 
