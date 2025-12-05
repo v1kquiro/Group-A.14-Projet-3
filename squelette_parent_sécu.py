@@ -9,6 +9,7 @@ import music
 
 #Initialisation des variables du micro:bit      
 radio.on()
+radio.config(group= , channel= , address =  )
 connexion_established = False # Indique si la connexion est établie
 key = "KEYWORD"               # Clé de chiffrement partagée entre les deux micro:bits
 connexion_key = None          # Clé de connexion temporaire pour l'établissement de la connexion
@@ -172,8 +173,8 @@ def calculate_challenge_response(challenge):    # ce lui le nonce
 def verification_nonce(nonce):
     """
     Vérifie si le nonce a dejà été utilisé
-    return True si le nonce est nouveau(donc accepte)
-    return False si le nonce si nonce déjà vu(réjette)
+    return True si le nonce nouveau(donc accepte)
+    return False si le nonce  nonce déjà vu(réjette)
     
     :param(str): nonce: Nonce a vérifer
     :return (bool): True si c'est nouveau et False si c'est déja utilisé
@@ -209,7 +210,7 @@ def respond_to_connexion_request(key):
             if verification_nonce(nonce):  
                 response = calculate_challenge_response(nonce) 
                 connexion_key = response  # on stock la reponse pour la session de connexion
-            #on envoi la reponse au bebe au parent 
+                   #on envoi la reponse au bebe au parent 
                 send_packet(key, "RESPONSE", response)
                 display.show(Image.YES)  # indique l'envoi de la réponse en cours par un YES
                 return response
@@ -243,8 +244,9 @@ def main():        # le parent attend le signe de l'enfant
                         display.show(Image.SAD)
                         music.play(music.POWER_DOWN) 
 
-                    elif message == "GOOOD" : # si le bebe est content
+                    elif message == "GOOD" : # si le bebe est content
                         baby_state = 0
                         display.show(Image.HAPPY)   # indique que le bebe est content
                         music.play(music.POWER_UP)
         sleep(100)  # pause pour eviter de surcharger le parent sinon il s'eteint
+main()
