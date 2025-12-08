@@ -145,6 +145,7 @@ symboles = ["-", "1", "2"]
 etat_actuel_symbole = ""
 # Fonction gérant l'état de sommeil du bébé
 def etat_sommeil_bebe():
+	global etat_actuel_symbole
     compteur = [0, 0, 0]
 	# Composantes de l'accélération
     x = accelerometer.get_x()
