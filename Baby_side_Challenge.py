@@ -118,7 +118,7 @@ def envoyer_signal(message):
 # Fonction permettant de recevoir des messages du bebi parent
 def recevoir_signal():
     signal = radio.receive()
-	return signal
+    return signal
 
 
 #Calculate the challenge response
@@ -168,7 +168,7 @@ def etat_sommeil_bebe():
             compteur[valeur] += 1
         etat_actuel = compteur.index(max(compteur))
 		# On renvoie au bebi parent le symbole correspondant à l'état de sommeil
-		etat_actuel_symbole = symboles[etat_actuel]
+        etat_actuel_symbole = symboles[etat_actuel]
         radio.send(etat_actuel_symbole)
 	# Prend une mesure toutes les 0,1 seconde
     sleep(100)
@@ -258,5 +258,5 @@ while running :
                 for haut in range(5):
                     display.set_pixel(larg,haut,1)
 	# Musique automatique si bébé très agité
-	if etat_actuel_symbole = "2":
-		musique()
+    if etat_actuel_symbole == "2":
+        musique()
