@@ -9,7 +9,7 @@ import math as m
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
 radio.on()
-radio.config(group=32, power=6) #l'alimentation pour recevoir les msgs etc pour microbit
+radio.config(group=32, power=6) # Alignement de la fréquence et de la puissance sur le bebi parent
 
 def hashing(string):
 	"""
