@@ -222,12 +222,16 @@ while running:
                         combinaison = True
                         envoyer_signal("musique")
                     elif A == 1 and B == 3:
+                        combinaison = True
                         radio.send("quantite_lait")
                     elif A == 2 and B == 1:
+                        combinaison = True
                         envoyer_signal("temperature")
                     elif A == 3 and B == 1:
+                        combinaison = True
                         envoyer_signal("lumiere")
                     elif A == 2 and B == 2:
+                        combinaison = True
                         snake()
                     else:
                         display.scroll("Reset", 60)
@@ -272,6 +276,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
