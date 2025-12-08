@@ -209,35 +209,35 @@ while running:
             sleep(200)
         # Les deux cas de figure si bouton A pressé
         if button_a.is_pressed():
-    if debut_appui_A is None: 
-        debut_appui_A = running_time()
-    else:
-        if debut_appui_A is not None:
-            duree = running_time() - debut_appui_A
-            if duree >= temps_maintenu:
-                if A == 1 and B == 1:
-                    combinaison = True
-                    envoyer_signal("etat_sommeil")
-                elif A == 1 and B == 2:
-                    combinaison = True
-                    envoyer_signal("musique")
-                elif A == 1 and B == 3:
-                    radio.send("quantite_lait")
-                elif A == 2 and B == 1:
-                    envoyer_signal("temperature")
-                elif A == 3 and B == 1:
-                    envoyer_signal("lumiere")
-                elif A == 2 and B == 2:
-                    snake()
-                else:
-                    display.scroll("Reset", 60)
-                A = 0
-                B = 0
+            if debut_appui_A is None: 
+                debut_appui_A = running_time()
             else:
-                A += 1
-                display.show("A")
-                sleep(200)
-            debut_appui_A = None
+                if debut_appui_A is not None:
+                    duree = running_time() - debut_appui_A
+                    if duree >= temps_maintenu:
+                        if A == 1 and B == 1:
+                            combinaison = True
+                            envoyer_signal("etat_sommeil")
+                        elif A == 1 and B == 2:
+                            combinaison = True
+                            envoyer_signal("musique")
+                        elif A == 1 and B == 3:
+                            radio.send("quantite_lait")
+                        elif A == 2 and B == 1:
+                            envoyer_signal("temperature")
+                        elif A == 3 and B == 1:
+                            envoyer_signal("lumiere")
+                        elif A == 2 and B == 2:
+                            snake()
+                        else:
+                            display.scroll("Reset", 60)
+                        A = 0
+                        B = 0
+                    else:
+                        A += 1
+                        display.show("A")
+                        sleep(200)
+                    debut_appui_A = None
     sleep(100)
 
     ##temp##
@@ -272,6 +272,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
