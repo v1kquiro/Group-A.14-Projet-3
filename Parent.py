@@ -2,6 +2,8 @@ from microbit import *
 import radio
 import log
 import music
+import random
+
 
 radio.on() # Activation de la radio
 radio.config(group=32, power=6) # Mise en place de la fréquence et de la puissance de la radio
@@ -27,18 +29,11 @@ def envoyer_signal(message):
     sleep(300)
     display.clear()
 
-# Fonction pour recevoir et display des messages du microbit bebe 
-def recevoir_signal(message):
-    message = radio.receive
-    display.show(message)
-
 log.set_labels('temperature','sound','light','etat_sommeil','musique')
 log.add({
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
     'light' : display.read_light_level(),
-    'etat_sommeil' : etat_sommeil_bebe(),
-    'musique' : musique()
 }) #crees les valeurs pour temp son et lumiere
 
 def log_data():
@@ -46,9 +41,7 @@ def log_data():
     'temperature' : temperature(),
     'sound' : microphone.sound_level(),
     'light' : display.read_light_level(),
-    'etat_sommeil' : etat_sommeil_bebe(),
-    'musique' : musique()
-    }):
+    })
     #log les entrees chaque 30 sec
 
 #def de la boucle de demande de nourrir et son clear
@@ -188,8 +181,9 @@ def snake():
 # Boucle principale
 running = True
 while running:
-    # Recevoir messages du bebi parent
-    recevoir_signal(message)
+    # Recevoir et display des messages du microbit bebe 
+    message = radio.receive
+    display.scroll(str(message))
     # Variables utiles pour les différentes combinaisons du menu principal
     temps_maintenu = 1000
     combinaison = False
