@@ -246,45 +246,19 @@ while running:
                     sleep(200)
                 debut_appui_A = None
     sleep(1000)
-    
-    if action == "temperature":
-        display.show('.')
-        currentTemp = temperature()
-
-    if currentTemp < min:
-        min = currentTemp
-    elif currentTemp > max:
-        max = currentTemp
-
-    if currentTemp >= targetTemp + 3:
-        music.play(music.JUMP_UP)
-        display.scroll("HIGH")
-
-    if currentTemp <= targetTemp - 3:
-        music.play(music.JUMP_DOWN)
-        display.scroll("LOW")
-
-    if button_a.was_pressed():
-        display.scroll(min)
-    if button_b.was_pressed():
-        display.scroll(max)
-
-    radio.send(str(currentTemp))
 
     if action == "sommeil":
-    display.scroll("SOMMEIL")
+        display.scroll(str("sommeil"))
     sleep(1000)
     
     # Attente de la réponse du bébé
     message = radio.receive()
     if message:
-        display.scroll(message)
+        display.scroll(str(message))
 
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
-
-
 
 
 
