@@ -143,10 +143,11 @@ def establish_connexion(key):
 etats_sommeil = []
 symboles = ["-", "1", "2"]
 etat_actuel_symbole = ""
+musique_deja_jouee = False
 # Fonction gérant l'état de sommeil du bébé
 def etat_sommeil_bebe():
 	global etat_actuel_symbole
-    compteur = [0, 0, 0]
+	compteur = [0, 0, 0]
 	# Composantes de l'accélération
     x = accelerometer.get_x()
     y = accelerometer.get_y()
@@ -172,7 +173,7 @@ def etat_sommeil_bebe():
         etat_actuel_symbole = symboles[etat_actuel]
 	# Prend une mesure toutes les secondes
 	for i in range(10):
-    	sleep(100)
+        sleep(100)
 
 # Fonction jouant une musique pour le bébé
 def musique():
@@ -259,5 +260,8 @@ while running :
                 for haut in range(5):
                     display.set_pixel(larg,haut,1)
 	# Musique automatique si bébé très agité
-    if etat_actuel_symbole == "2":
-        musique()
+    if etat_actuel_symbole == "2" and not musique_deja_jouee:
+    	musique()
+    	musique_deja_jouee = True
+	if etat_actuel_symbole != "2":
+    	musique_deja_jouee = False
