@@ -242,13 +242,13 @@ while running :
 	signal = recevoir_signal()
 	# Lancement des différentes fonctions en fonction des messages reçus du bebi parent
     if signal:
-        if recevoir_signal() == "etat_sommeil":
+        if signal == "etat_sommeil":
             etat_sommeil_bebe()
-        elif recevoir_signal() == "musique":
+        elif signal == "musique":
             musique()
-        elif recevoir_signal() == "temperature":
+        elif signal == "temperature":
             temperature()
-        elif recevoir_signal() == "lumiere":
+        elif signal == "lumiere":
             nv_de_lum()
         else:
             pass
