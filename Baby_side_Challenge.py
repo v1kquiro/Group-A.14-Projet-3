@@ -239,8 +239,7 @@ def nv_de_lum() :
 
 running = True
 while running :
-    signal = None
-    recevoir_signal()
+	signal = recevoir_signal()
 	# Lancement des différentes fonctions en fonction des messages reçus du bebi parent
     if signal:
         if recevoir_signal() == "etat_sommeil":
