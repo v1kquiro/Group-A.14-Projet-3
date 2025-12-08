@@ -48,41 +48,57 @@ def log_data():
     'light' : display.read_light_level(),
     'etat_sommeil' : etat_sommeil_bebe(),
     'musique' : musique()
-    })
+    }):
     #log les entrees chaque 30 sec
 
 #def de la boucle de demande de nourrir et son clear
-def nourrir():
+
+def nourrir() :
     index = 0   
-    while True:
+    while True  :      
+
         faim = [Image.ANGRY, Image.ARROW_S]
         display.show(faim, delay=1000, loop=False)
         music.play(music.BA_DING)
-        if  button_b.was_pressed():
+        
+        if  button_b.was_pressed() :
             display.clear()
             index += 1 
+            sleep(2000)
             return index
-        else:
+        else :
+            
             display.show(faim, delay=1000, loop=False)
             music.play(music.BA_DING)
 
-#crée un index qui s'incrémente chzque fois que lke bébé est nourri et crée un moyen de stopper l'alarme
+
 def total_lait():   
     while True :
-        index = 1
-        temps_alerte = 10800000       
+        index = 1 
+        temps_alerte = 10000       
         début = running_time()    
         while True :            
-            if running_time() - début < temps_alerte :
-                if button_b.is_pressed() :
+           if button_a.is_pressed() :
+                index += 1
+                display.show(index)
+                sleep(1000) 
+                display.clear()
+           if button_b.is_pressed() :
+                index = index - 1 
+                display.show(index)
+                sleep(1000) 
+                display.clear()
+           if running_time() - début < temps_alerte :
+                if pin_logo.is_touched():
                     display.show(index)                
-                    if button_b.is_pressed() :               
+                    if pin_logo.is_touched() :               
                         sleep(1000) 
                         display.clear()             
-            elif running_time() - début >= temps_alerte :    
+           elif running_time() - début >= temps_alerte :    
                 nourrir()                     
                 index +=1    
                 début = running_time()
+
 
 # Fonction permettant de jouer au jeu snake
 def snake():
@@ -266,6 +282,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
