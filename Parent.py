@@ -245,7 +245,7 @@ while running:
                     display.show("A")
                     sleep(200)
                 debut_appui_A = None
-    sleep(100)
+    sleep(1000)
     
     if action == "temperature":
         display.show('.')
@@ -283,6 +283,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
