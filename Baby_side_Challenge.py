@@ -226,6 +226,7 @@ def calcul_lumiere() :
         else :
              radio.send('lum ex')
              display.scroll(9)
+			
 #regarde la lumière et envoie un message au microbit parent du niveau de celle-ci
 def nv_de_lum() :   
     envoi_avis = 600000
@@ -240,6 +241,7 @@ running = True
 while running :
     signal = None
     recevoir_signal()
+	# Lancement des différentes fonctions en fonction des messages reçus du bebi parent
     if signal:
         if recevoir_signal() == "etat_sommeil":
             etat_sommeil_bebe()
@@ -251,9 +253,10 @@ while running :
             nv_de_lum()
         else:
             pass
-        if display.read_light_level() < 25 :        
-            for larg in range(5) :     
-                for haut in range(5) :
-                    display.set_pixel(larg,haut,0)
+        if display.read_light_level() < 25:        
+            for larg in range(5):     
+                for haut in range(5):
+                    display.set_pixel(larg,haut,1)
+	# Musique automatique si bébé très agité
 	if etat_actuel_symbole = "2":
 		musique()
