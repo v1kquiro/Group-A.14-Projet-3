@@ -220,10 +220,6 @@ while running:
                         envoyer_signal("musique")
                         action = "musique"
                         combinaison = True
-                    elif A == 1 and B == 3:
-                        radio.send("quantite_lait")
-                        action = "lait"
-                        combinaison = True
                     elif A == 2 and B == 1:
                         envoyer_signal("temperature")
                         action = "temperature"
@@ -259,6 +255,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
