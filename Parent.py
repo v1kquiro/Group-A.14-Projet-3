@@ -216,23 +216,23 @@ while running:
                 duree = running_time() - debut_appui_A
                 if duree >= temps_maintenu:
                     if A == 1 and B == 1:
-                        combinaison = True
                         envoyer_signal("etat_sommeil")
+                        combinaison = True
                     elif A == 1 and B == 2:
-                        combinaison = True
                         envoyer_signal("musique")
+                        combinaison = True
                     elif A == 1 and B == 3:
-                        combinaison = True
                         radio.send("quantite_lait")
+                        combinaison = True
                     elif A == 2 and B == 1:
-                        combinaison = True
                         envoyer_signal("temperature")
+                        combinaison = True
                     elif A == 3 and B == 1:
-                        combinaison = True
                         envoyer_signal("lumiere")
-                    elif A == 2 and B == 2:
                         combinaison = True
+                    elif A == 2 and B == 2:
                         snake()
+                        combinaison = True
                     else:
                         display.scroll("Reset", 60)
                     A = 0
@@ -276,6 +276,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
