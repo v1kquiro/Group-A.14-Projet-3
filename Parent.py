@@ -182,8 +182,9 @@ def snake():
 running = True
 while running:
     # Recevoir et display des messages du microbit bebe 
-    message = radio.receive
-    display.scroll(str(message))
+    message = radio.receive()
+    if message:
+        display.scroll(str(message))
     # Variables utiles pour les différentes combinaisons du menu principal
     temps_maintenu = 1000
     combinaison = False
@@ -208,11 +209,12 @@ while running:
             sleep(200)
         # Les deux cas de figure si bouton A pressé
         if button_a.is_pressed():
-            if debut_appui_A is None: 
-                debut_appui_A = running_time()
-            # Appui maintenu sur le bouton A (+ que 1 sec)
-            if running_time() - debut_appui_A >= temps_maintenu:
-                # Différentes combinaisons permettant d'appeler les fonctions
+    if debut_appui_A is None: 
+        debut_appui_A = running_time()
+    else:
+        if debut_appui_A is not None:
+            duree = running_time() - debut_appui_A
+            if duree >= temps_maintenu:
                 if A == 1 and B == 1:
                     combinaison = True
                     envoyer_signal("etat_sommeil")
@@ -227,20 +229,14 @@ while running:
                     envoyer_signal("lumiere")
                 elif A == 2 and B == 2:
                     snake()
-                # Si aucune combinaison ne correspond
                 else:
                     display.scroll("Reset", 60)
-                    A = 0
-                    B = 0
-                    debut_appui_A = None
-        else:
-            if debut_appui_A is not None:
-                duree = running_time() - debut_appui_A
-                # Appui court sur le bouton A
-                if duree < temps_maintenu:
-                    A += 1
-                    display.show("A")
-                    sleep(200)
+                A = 0
+                B = 0
+            else:
+                A += 1
+                display.show("A")
+                sleep(200)
             debut_appui_A = None
     sleep(100)
 
@@ -276,6 +272,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
