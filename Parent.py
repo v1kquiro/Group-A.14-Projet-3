@@ -182,10 +182,6 @@ def snake():
 running = True
 action = None
 while running:
-    # Recevoir et display des messages du microbit bebe 
-    message = radio.receive()
-    if message:
-        display.scroll(str(message))
     # Variables utiles pour les différentes combinaisons du menu principal
     temps_maintenu = 1000
     combinaison = False
@@ -275,9 +271,19 @@ while running:
 
     radio.send(str(currentTemp))
 
+    if action == "sommeil":
+    display.scroll("SOMMEIL")
+    sleep(1000)
+    
+    # Attente de la réponse du bébé
+    message = radio.receive()
+    if message:
+        display.scroll(message)
+
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
