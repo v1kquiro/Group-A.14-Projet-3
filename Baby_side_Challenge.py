@@ -170,9 +170,8 @@ def etat_sommeil_bebe():
         etat_actuel = compteur.index(max(compteur))
 		# On renvoie au bebi parent le symbole correspondant à l'état de sommeil
         etat_actuel_symbole = symboles[etat_actuel]
-        radio.send(etat_actuel_symbole)
 	# Prend une mesure toutes les 0,1 seconde
-    sleep(100)
+    sleep(1000)
 
 # Fonction jouant une musique pour le bébé
 def musique():
@@ -240,11 +239,12 @@ def nv_de_lum() :
 
 running = True
 while running :
+	etat_sommeil_bebe()
 	signal = recevoir_signal()
 	# Lancement des différentes fonctions en fonction des messages reçus du bebi parent
     if signal:
         if signal == "etat_sommeil":
-            etat_sommeil_bebe()
+            radio.send(etat_actuel_symbole)
         elif signal == "musique":
             musique()
         elif signal == "temperature":
