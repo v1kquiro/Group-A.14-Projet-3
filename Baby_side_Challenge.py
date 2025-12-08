@@ -142,6 +142,7 @@ def establish_connexion(key):
 
 etats_sommeil = []
 symboles = ["-", "1", "2"]
+etat_actuel_symbole = ""
 # Fonction gérant l'état de sommeil du bébé
 def etat_sommeil_bebe():
     compteur = [0, 0, 0]
@@ -150,7 +151,6 @@ def etat_sommeil_bebe():
     y = accelerometer.get_y()
     z = accelerometer.get_z()
     # Norme de l'accélération
-    acceleration = math.sqrt((x**2) + (y**2) + (z**2))
     acceleration = m.sqrt((x**2) + (y**2) + (z**2))
     # "0" = endormi, "1" = agité, "2" = très agité
     if acceleration <= 1100:
