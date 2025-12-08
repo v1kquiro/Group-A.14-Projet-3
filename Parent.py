@@ -3,10 +3,8 @@ import radio
 import log
 import music
 
-radio.config(group=32) #l'alimentation pour recevoir les msgs etc pour microbit
-
-radio.on()
-radio.config(group=32, power=6) #avoir access a recevoir les msgs
+radio.on() # Activation de la radio
+radio.config(group=32, power=6) # Mise en place de la fréquence et de la puissance de la radio
 
 currentTemp = temperature()
 targetTemp = 20
@@ -20,26 +18,19 @@ score += 1
 display.scroll(score)
 
 name = 'Parent'
-display.scroll(name) #nommee la microbit
+display.scroll(name) # Nomer le microbit pour les différencier
 
+# Fonction pour envoyer des messages au microbit bebe 
 def envoyer_signal(message):
     radio.send(message)
     display.show("S")
     sleep(300)
     display.clear()
 
+# Fonction pour recevoir et display des messages du microbit bebe 
 def recevoir_signal(message):
-    return radio.receive
-
-def etat_sommeil_bebe():
-    mouvement = accelerometer.get_strength()
-    if mouvement < 1500:
-        return 1
-    else:
-        return 0
-
-def musique():
-    return 0
+    message = radio.receive
+    display.show(message)
 
 log.set_labels('temperature','sound','light','etat_sommeil','musique')
 log.add({
@@ -61,20 +52,17 @@ def log_data():
     #log les entrees chaque 30 sec
 
 #def de la boucle de demande de nourrir et son clear
-def nourrir() :
+def nourrir():
     index = 0   
-    while True  :      
-
+    while True:
         faim = [Image.ANGRY, Image.ARROW_S]
         display.show(faim, delay=1000, loop=False)
         music.play(music.BA_DING)
-        
-        if  button_b.was_pressed() :
+        if  button_b.was_pressed():
             display.clear()
             index += 1 
             return index
-        else :
-            
+        else:
             display.show(faim, delay=1000, loop=False)
             music.play(music.BA_DING)
 
@@ -113,7 +101,9 @@ def snake():
 
     # Boucle principale
     while not game_over:
+        # Si bouton A pressé
         if button_a.was_pressed():
+            # Mouvements en fonction de la direction du serpent
             if direction == up:
                 direction = left
             elif direction == left:
@@ -122,7 +112,9 @@ def snake():
                 direction = right
             elif direction == right:
                 direction = up
+        # Si bouton B pressé
         if button_b.was_pressed():
+            # Mouvements en fonction de la direction du serpent
             if direction == up:
                 direction = right
             elif direction == left:
@@ -134,7 +126,7 @@ def snake():
         # Actualisation de la tête du serpent
         direction_en_x = snake[0][0] + direction[0]
         direction_en_y = snake[0][1] + direction[1]
-        # Téléportations et collisions
+        # Si serpent touche les bords de l'écran, il est téléporté à l'opposé
         if direction_en_x< 0:
             direction_en_x= 4
         elif direction_en_x > 4:
@@ -146,10 +138,13 @@ def snake():
         nouvelle_direction = (direction_en_x, direction_en_y)
         # Nettoyage de l'écran
         display.clear()
+        # Game over si le serpent touche son corps
         if nouvelle_direction in snake:
             game_over = True
         else:
+            # Si le serpent ne touche pas son corps
             snake.insert(0, nouvelle_direction)
+        # Si le serpent mange un fruit (corps grandi)
         if nouvelle_direction == fruit:
             fruit = (random.randint(0, 4), random.randint(0, 4))
             score += 1
@@ -167,6 +162,7 @@ def snake():
             else:
                 lumiere = 7
             display.set_pixel(snake[i][0], snake[i][1], lumiere)
+        # Actualisation toutes les 750 millisecondes
         sleep(750)
         
     # Si game_over == True
@@ -176,11 +172,15 @@ def snake():
 # Boucle principale
 running = True
 while running:
+    # Recevoir messages du bebi parent
+    recevoir_signal(message)
+    # Variables utiles pour les différentes combinaisons du menu principal
     temps_maintenu = 1000
     combinaison = False
     A = 0
     B = 0
     debut_appui_A = None
+    # Tant qu'aucune combinaison correcte n'a été rentrée
     while not combinaison:
         # Image de clé
         key = Image(
@@ -191,17 +191,18 @@ while running:
             "00900:"
         )
         display.show(key)
-        # Si bouton b appuyé
+        # Si bouton B pressé
         if button_b.was_pressed():
             B += 1
             display.show("B")
             sleep(200)
-        # Les deux cas de figure si bouton a appuyé
+        # Les deux cas de figure si bouton A pressé
         if button_a.is_pressed():
             if debut_appui_A is None: 
                 debut_appui_A = running_time()
             # Appui maintenu sur le bouton A (+ que 1 sec)
             if running_time() - debut_appui_A >= temps_maintenu:
+                # Différentes combinaisons permettant d'appeler les fonctions
                 if A == 1 and B == 1:
                     combinaison = True
                     envoyer_signal("etat_sommeil")
@@ -232,15 +233,6 @@ while running:
                     sleep(200)
             debut_appui_A = None
     sleep(100)
-    #si les boutons A et B sont appuyer
-
-    #if button_a.was_pressed():
-        #running = not running
-    #if running:
-        #display.show(1)
-    #else:
-        #display.show(0)
-         #sauvegrader du data
 
     ##temp##
     display.show('.')
@@ -274,6 +266,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
