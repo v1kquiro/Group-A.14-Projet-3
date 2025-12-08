@@ -156,7 +156,7 @@ def etat_sommeil_bebe():
     # "0" = endormi, "1" = agité, "2" = très agité
     if acceleration <= 1100:
         etats_sommeil.append(0)
-    elif 1100 < acceleration <= 1500:
+    elif 1100 < acceleration <= 1800:
         etats_sommeil.append(1)
     else:
         etats_sommeil.append(2)
@@ -170,8 +170,9 @@ def etat_sommeil_bebe():
         etat_actuel = compteur.index(max(compteur))
 		# On renvoie au bebi parent le symbole correspondant à l'état de sommeil
         etat_actuel_symbole = symboles[etat_actuel]
-	# Prend une mesure toutes les 0,1 seconde
-    sleep(1000)
+	# Prend une mesure toutes les secondes
+	for i in range(10):
+    	sleep(100)
 
 # Fonction jouant une musique pour le bébé
 def musique():
