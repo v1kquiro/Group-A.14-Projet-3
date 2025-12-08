@@ -180,6 +180,7 @@ def snake():
 
 # Boucle principale
 running = True
+action = None
 while running:
     # Recevoir et display des messages du microbit bebe 
     message = radio.receive()
@@ -217,22 +218,28 @@ while running:
                 if duree >= temps_maintenu:
                     if A == 1 and B == 1:
                         envoyer_signal("etat_sommeil")
+                        action = "sommeil"
                         combinaison = True
                     elif A == 1 and B == 2:
                         envoyer_signal("musique")
+                        action = "musique"
                         combinaison = True
                     elif A == 1 and B == 3:
                         radio.send("quantite_lait")
+                        action = "lait"
                         combinaison = True
                     elif A == 2 and B == 1:
                         envoyer_signal("temperature")
+                        action = "temperature"
                         combinaison = True
                     elif A == 3 and B == 1:
                         envoyer_signal("lumiere")
+                        action = "lumiere"
                         combinaison = True
                     elif A == 2 and B == 2:
-                        snake()
+                        action = "snake"
                         combinaison = True
+                        snake()
                     else:
                         display.scroll("Reset", 60)
                     A = 0
@@ -243,11 +250,11 @@ while running:
                     sleep(200)
                 debut_appui_A = None
     sleep(100)
-
-    ##temp##
-    display.show('.')
-    currentTemp = temperature()
     
+    if action == "temperature":
+        display.show('.')
+        currentTemp = temperature()
+
     if currentTemp < min:
         min = currentTemp
     elif currentTemp > max:
@@ -260,22 +267,18 @@ while running:
     if currentTemp <= targetTemp - 3:
         music.play(music.JUMP_DOWN)
         display.scroll("LOW")
-        
+
     if button_a.was_pressed():
         display.scroll(min)
     if button_b.was_pressed():
         display.scroll(max)
-        
-    sleep(1000)
-    display.clear()
-    sleep(1000)
-    #apres avoir appure les boutons A ou B (appui long) A va afficher la temp min, et B va afficher la temp max
 
     radio.send(str(currentTemp))
 
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
