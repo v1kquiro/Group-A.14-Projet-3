@@ -2,7 +2,7 @@ from microbit import *
 import radio
 import random
 import music
-import math as m
+import math
 
 #Can be used to filter the communication, only the ones with the same parameters will receive messages
 #radio.config(group=23, channel=2, address=0x11111111)
@@ -15,8 +15,8 @@ connexion_established = False  # Clé de connexion temporaire pour l'établissem
 
 currentTemp = temperature()
 targetTemp = 20
-maximum = -999
-min = 999
+temp_max = -999
+temp_min = 999
 #detecter le max et min de temperature
 
 def hashing(string):
@@ -92,7 +92,7 @@ def send_packet(key, type, content):
            (str) content:   Données à envoyer
 	:return none
     """
-        #T: type du message
+    #T: type du message
     T = type
     #L : Longeur du message
     L= str(len(content))
@@ -104,6 +104,7 @@ def send_packet(key, type, content):
  
     #chiffrement du packet
     encrypted_packet = vigenere(packet_TLV, key, decryption=False)
+    
     #envoi via radio
     radio.send(encrypted_packet)
 
@@ -156,16 +157,6 @@ def receive_packet(packet_received, key):
  
     except: 
         return "",0, ""
-    
-# Fonction permettant d'envoyer des messages au bebi parent
-def envoyer_signal(message):
-    radio.send(message)
-
-# Fonction permettant de recevoir des messages du bebi parent
-def recevoir_signal():
-    signal = radio.receive()
-    return signal
-
 
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
@@ -221,26 +212,12 @@ def establish_connexion(key):
 
 def main():     # ici je retiens que le gosse est actif 
     global connexion_established
-
-    while True:
-        if not connexion_established:
-              #ici il est actif il cherche a se connecter au parent
-            if button_a.was_pressed():
-                result = establish_connexion(key)
-                if result :
-                    connexion_established = True
-        else:
-              # le bebi envoi un status
-             if button_a.was_pressed():
-                  send_packet(key, "0x03", "CRYING")   # le bebe est en pleur ( etat d'eveil du nourrisson)
-                  display.show(Image.SAD)   # indique que le bebe pleur
-                  music.play(music.BA_DING)   
-             elif button_b.was_pressed():
-                  send_packet(key, "0x03", "GOOD")  # le bebe est content
-                  display.show(Image.HAPPY)   # indique que le bebe est content
-                  music.play(music.POWER_UP) 
-        sleep(100)  # pause pour eviter de surcharger le bebi sinon il s'eteint
-        
+    if not connexion_established:
+        #ici il est actif il cherche a se connecter au parent
+        if button_a.was_pressed():
+            result = establish_connexion(key)
+            if result :
+                connexion_established = True
 
 etats_sommeil = []
 symboles = ["-", "1", "2"]
@@ -250,12 +227,12 @@ musique_deja_jouee = False
 def etat_sommeil_bebe():
     global etat_actuel_symbole
     compteur = [0, 0, 0]
-	# Composantes de l'accélération
+    # Composantes de l'accélération
     x = accelerometer.get_x()
     y = accelerometer.get_y()
     z = accelerometer.get_z()
     # Norme de l'accélération
-    acceleration = m.sqrt((x**2) + (y**2) + (z**2))
+    acceleration = math.sqrt((x**2) + (y**2) + (z**2))
     # "0" = endormi, "1" = agité, "2" = très agité
     if acceleration <= 1100:
         etats_sommeil.append(0)
@@ -263,17 +240,17 @@ def etat_sommeil_bebe():
         etats_sommeil.append(1)
     else:
         etats_sommeil.append(2)
-	# On supprime chaque fois le premier élément de la liste si plus de 12 éléments
+    # On supprime chaque fois le premier élément de la liste si plus de 12 éléments
     if len(etats_sommeil) == 12:
          etats_sommeil.pop(0)
-	# Si 11 éléments dans la liste
+    # Si 11 éléments dans la liste
     if len(etats_sommeil) == 11:
         for valeur in etats_sommeil:
             compteur[valeur] += 1
         etat_actuel = compteur.index(max(compteur))
-		# On renvoie au bebi parent le symbole correspondant à l'état de sommeil
+        # On renvoie au bebi parent le symbole correspondant à l'état de sommeil
         etat_actuel_symbole = symboles[etat_actuel]
-	# Prend une mesure toutes les secondes
+    # Prend une mesure toutes les secondes
     for i in range(10):
         sleep(100)
 
@@ -298,83 +275,79 @@ def musique():
 	music.set_tempo(bpm=60) 
 	music.play(star_wars)
 
-
-def calcul_lumiere() :
+def calcul_lumiere():
         if display.read_light_level() < 25 : 
-            radio.send('lum eteinte')
-            display.scroll(0)
+            send_packet(key, "0x03", "lum eteinte")
         elif display.read_light_level() >= 25  and  display.read_light_level() <= 50 :
-            radio.send('lum quasi eteinte')
-            display.scroll(1)
+            send_packet(key, "0x03", "lum tres faible")
         elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
-            radio.send('lum très faible')
-            display.scroll(2)
-        elif display.read_light_level() >= 50  and  display.read_light_level() <= 75 :
-              radio.send('lum faible')
-              display.scroll(3)
+            send_packet(key, "0x03", "lum faible")
         elif display.read_light_level() >= 75  and  display.read_light_level() <= 100 :
-             radio.send('lum moyenne')
-             display.scroll(4)
+             send_packet(key, "0x03", "lum moyenne")
         elif display.read_light_level() >= 100  and  display.read_light_level() <= 125 :
-             radio.send('lum bonne')
-             display.scroll(5)
+             send_packet(key, "0x03", "lum bonne")
         elif display.read_light_level() >= 125  and  display.read_light_level() <= 150 :
-             radio.send('lum normale') 
-             display.scroll(6)
+             send_packet(key, "0x03", "lum normale")
         elif display.read_light_level() >= 150  and  display.read_light_level() <= 175 :
-             radio.send('lum haute')
-             display.scroll(7)
+             send_packet(key, "0x03", "lum haute")
         elif display.read_light_level() >= 175  and  display.read_light_level() <= 200 :
-             radio.send('lum tres haute')
-             display.scroll(8)
+             send_packet(key, "0x03", "lum tres haute")
         else :
-             radio.send('lum ex')
-             display.scroll(9)
-			
-#regarde la lumière et envoie un message au microbit parent du niveau de celle-ci
-def nv_de_lum() :   
-    envoi_avis = 600000
-    starting_time = running_time()
-    while True :  
-        if running_time() - starting_time > envoi_avis :
-            calcul_lumiere()
-            starting_time = running_time()
-#défini quand la lumière dois être envoyé
+             send_packet(key, "0x03", "lum extreme")
 
 running = True
-action = None
+envoi_avis = 180000
+starting_time = running_time()
 while running :
+    currentTemp = temperature()
+    main()
     etat_sommeil_bebe()
-    signal = recevoir_signal()
+    packet = radio.receive()
+
+    if currentTemp < temp_min:
+        temp_min = currentTemp
+    elif currentTemp > temp_max:
+        temp_max = currentTemp
+        
 	# Lancement des différentes fonctions en fonction des messages reçus du bebi parent
-    if signal:
-        if signal == "etat_sommeil":
-            radio.send(etat_actuel_symbole)
-        elif signal == "musique":
-            musique()
-        elif signal == "temperature":
-            temperature()
-        elif signal == "lumiere":
-            nv_de_lum()
-        else:
-            pass
-        if display.read_light_level() < 25:        
-            for larg in range(5):     
-                for haut in range(5):
-                    display.set_pixel(larg,haut,1)
+    if packet:
+        type_msg, _, message = receive_packet(packet, key)
+        if type_msg == "0x03":
+            if message == "etat_sommeil":
+                send_packet(key, "0x03", etat_actuel_symbole)
+            elif message == "musique":
+                musique()
+            elif message == "temperature":
+                send_packet(key, "0x03", str(currentTemp))
+                display.scroll("MAX")
+                sleep(200)
+                send_packet(key, "0x03", str(temp_max))
+                sleep(200)
+                send_packet(key, "0x03", str(temp_min))
+            elif message == "lumiere":
+                calcul_lumiere()
+            if display.read_light_level() < 25:        
+                for larg in range(5):     
+                    for haut in range(5):
+                        display.set_pixel(larg,haut,1)
+                        
 	# Musique automatique si bébé très agité
     if etat_actuel_symbole == "2" and not musique_deja_jouee:
         musique()
         musique_deja_jouee = True
+        
     if etat_actuel_symbole != "2":
         musique_deja_jouee = False
 
-    if action == "temperature":
-        display.show('.')
-        currentTemp = temperature()
-
-    if currentTemp < min:
-        min = currentTemp
-    elif currentTemp > maximum:
-        maximum = currentTemp
-
+    if currentTemp <= 18:
+        display.show(Image.SAD)
+        music.play(["C4:4"])
+    elif currentTemp >= 27:
+        display.show(Image.SKULL)
+        music.play(["G5:4"])
+        
+    if running_time() - starting_time > envoi_avis :
+            calcul_lumiere()
+            starting_time = running_time()
+        
+    sleep(50)
