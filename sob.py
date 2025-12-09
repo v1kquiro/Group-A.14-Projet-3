@@ -389,20 +389,6 @@ def snake():
     display.scroll("GAME OVER", 50)
     display.scroll(str(score), 200)
 
-
-    if action == "sommeil":
-        display.scroll(str("SOMMEIL"))
-    sleep(1000)
-    
-    # Attente de la réponse du bébé
-    message = radio.receive()
-    if message:
-        display.scroll(str(message))
-
-    # Pour retourner au menu principal 
-    if combinaison == True and button_a.was_pressed():
-        combinaison = False
-
 def main():# le parent attend le signe de l'enfant
     global connexion_established
     global baby_state
@@ -416,23 +402,6 @@ while running:
         if result:
                 connexion_established = True
                 display.show(Image.HAPPY)  # connexion établie le micro:bit affiche HAPPY
-    else:
-        # le parent reçoit les status du bébé une fois connecté
-        incoming = radio.receive()
-        if incoming:
-            packet_type, _ , message = receive_packet(incoming, key)  # voir comment mettre le msg
-
-            if packet_type == "0x03":  
-                if message == "CRYING":               # packet_type = message 
-                    baby_state = 1                     # l etat du bebe est qu il pleur si c'est 0 il ne se passe rien
-                    display.show(Image.SAD)
-                    music.play(music.POWER_DOWN) 
-
-                elif message == "GOOD" : # si le bebe est content
-                    baby_state = 0
-                    display.show(Image.HAPPY)   # indique que le bebe est content
-                    music.play(music.POWER_UP)
-    sleep(100)  # pause pour eviter de surcharger le parent sinon il s'eteint
 
 # Variables utiles pour les différentes combinaisons du menu principal
     temps_maintenu = 1000
@@ -465,23 +434,19 @@ while running:
                 duree = running_time() - debut_appui_A
                 if duree >= temps_maintenu:
                     if A == 1 and B == 1:
-                        envoyer_signal("etat_sommeil")
+                        send_packet(key, "0x03", "etat_sommeil")
                         action = "sommeil"
                         combinaison = True
                     elif A == 1 and B == 2:
-                        envoyer_signal("musique")
+                        send_packet(key, "0x03", "musique")
                         action = "musique"
                         combinaison = True
-                    elif A == 1 and B == 3:
-                        radio.send("quantite_lait")
-                        action = "lait"
-                        combinaison = True
                     elif A == 2 and B == 1:
-                        envoyer_signal("temperature")
+                        send_packet(key, "0x03", "temperature")
                         action = "temperature"
                         combinaison = True
                     elif A == 3 and B == 1:
-                        envoyer_signal("lumiere")
+                        send_packet(key, "0x03", "lumiere")
                         action = "lumiere"
                         combinaison = True
                     elif A == 2 and B == 2:
@@ -498,4 +463,16 @@ while running:
                     sleep(200)
                 debut_appui_A = None
     sleep(100)
+    
+    # Attente de la réponse du bébé
+    packet = radio.receive()
+    if packet:
+        type_msg, _, message = receive_packet(packet, key)
+        if type_msg == "0x03":
+            display.clear()
+            display.scroll(message)
+            
+    # Pour retourner au menu principal 
+    if combinaison == True and button_a.was_pressed():
+        combinaison = False
 main()
