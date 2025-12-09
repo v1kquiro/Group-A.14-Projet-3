@@ -66,9 +66,9 @@ def nourrir() :
 
 
 def total_lait():   
+    index = 0
     while True :
-        index = 1 
-        temps_alerte = 10000       
+        temps_alerte = 10800000       
         début = running_time()    
         while True :            
            if pin_logo.is_touched() :
@@ -76,11 +76,14 @@ def total_lait():
                 display.show(index)
                 sleep(1000) 
                 display.clear()
-           if pin_logo.is_touched() and button_b.is_pressed()  :
-                index = index - 1 
+                
+                
+           if  pin_logo.is_touched() and button_b.is_pressed() :
+                index -= 2  
                 display.show(index)
                 sleep(1000) 
                 display.clear()
+                
            if running_time() - début < temps_alerte :
                 if button_b.is_pressed():
                     display.show(index)                
@@ -255,6 +258,7 @@ while running:
     # Pour retourner au menu principal 
     if combinaison == True and button_a.was_pressed():
         combinaison = False
+
 
 
 
